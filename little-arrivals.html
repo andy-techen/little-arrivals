@@ -98,6 +98,16 @@ body::before {
 .pages-wrap { flex:1; overflow:hidden; position:relative; }
 .page { display:none; width:100%; height:100%; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; }
 .page.active { display:block; }
+.page.slide-in-left { animation: slideInLeft 0.28s cubic-bezier(0.4,0,0.2,1) forwards; }
+.page.slide-in-right { animation: slideInRight 0.28s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes slideInLeft {
+  from { transform: translateX(100%); opacity: 0.4; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes slideInRight {
+  from { transform: translateX(-100%); opacity: 0.4; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
 
 /* Strip */
 .month-strip {
@@ -742,10 +752,21 @@ let swipeStartX=0, swipeStartY=0, currentTab=0;
 const pages = [document.getElementById("page-calendar"), document.getElementById("page-charts")];
 
 function setTab(idx) {
+  const prev = currentTab;
+  if(idx === prev) return;
   currentTab = idx;
-  pages.forEach((p,i)=>{
-    p.classList.toggle("active", i===idx);
+  const incoming = pages[idx];
+  const outgoing = pages[prev];
+
+  // Show incoming page first (so Chart.js can measure it), then animate
+  outgoing.classList.remove("active");
+  incoming.classList.remove("slide-in-left","slide-in-right");
+  incoming.classList.add("active");
+  // Direction: going right (idx>prev) slides in from right, left from left
+  requestAnimationFrame(()=>{
+    incoming.classList.add(idx > prev ? "slide-in-left" : "slide-in-right");
   });
+
   document.getElementById("tab-calendar").classList.toggle("active", idx===0);
   document.getElementById("tab-charts").classList.toggle("active", idx===1);
   if(idx===1) renderCharts();
