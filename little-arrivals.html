@@ -95,8 +95,9 @@ body::before {
   box-shadow:0 2px 8px rgba(80,60,40,0.07);
 }
 
-.pages-wrap { flex:1; display:flex; overflow:hidden; position:relative; }
-.page { flex:0 0 100%; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); will-change:transform; }
+.pages-wrap { flex:1; overflow:hidden; position:relative; }
+.page { display:none; width:100%; height:100%; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; }
+.page.active { display:block; }
 
 /* Strip */
 .month-strip {
@@ -310,7 +311,7 @@ body::before {
 
   <div class="pages-wrap" id="pages-wrap">
   <!-- Calendar Page -->
-  <div class="page" id="page-calendar">
+  <div class="page active" id="page-calendar">
     <div class="month-strip">
       <div class="strip-stat">
         <div class="strip-num p" id="strip-girls">0</div>
@@ -370,13 +371,13 @@ body::before {
             <button class="cal-arrow" id="chart-next-m" style="width:28px;height:28px;font-size:14px">&#8250;</button>
           </div>
         </div>
-        <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+        <div class="chart-wrap"><canvas id="chart-daily" style="display:block;width:100%;height:180px"></canvas></div>
       </div>
 
       <div class="chart-card">
         <div class="chart-card-title">Gender Split</div>
         <div style="display:flex;align-items:center;gap:20px">
-          <div style="width:130px;height:130px;flex-shrink:0;position:relative"><canvas id="chart-donut"></canvas></div>
+          <div style="width:130px;height:130px;flex-shrink:0;position:relative"><canvas id="chart-donut" width="130" height="130" style="display:block"></canvas></div>
           <div id="donut-legend" style="flex:1"></div>
         </div>
       </div>
@@ -387,7 +388,6 @@ body::before {
       </div>
     </div>
   </div>
-</div>
 </div>
 
 <button class="fab" id="fab">
@@ -589,7 +589,11 @@ function renderDailyChart() {
   const maxVal=Math.max(5,...gd.map((g,i)=>g+bd[i]));
   document.getElementById("chart-month-label").textContent=`${MS[chartVM]} ${chartVY}`;
 
-  const ctxD = document.getElementById("chart-daily").getContext("2d");
+  const canvasD = document.getElementById("chart-daily");
+  const wrapD = canvasD.parentElement;
+  canvasD.width = wrapD.offsetWidth || 350;
+  canvasD.height = 180;
+  const ctxD = canvasD.getContext("2d");
   if(cDaily) cDaily.destroy();
   cDaily = new Chart(ctxD,{
     type:"bar",
@@ -735,27 +739,24 @@ document.getElementById("chart-next-m").addEventListener("click",()=>{ chartVM++
 
 // ── Swipe between tabs ──
 let swipeStartX=0, swipeStartY=0, currentTab=0;
-const wrap = document.getElementById("pages-wrap");
 const pages = [document.getElementById("page-calendar"), document.getElementById("page-charts")];
 
-function setTab(idx, animate) {
+function setTab(idx) {
   currentTab = idx;
-  pages.forEach((p,i)=>{ p.style.transform=`translateX(${(i-idx)*100}%)`; });
+  pages.forEach((p,i)=>{
+    p.classList.toggle("active", i===idx);
+  });
   document.getElementById("tab-calendar").classList.toggle("active", idx===0);
   document.getElementById("tab-charts").classList.toggle("active", idx===1);
   if(idx===1) renderCharts();
 }
 
-// init positions without animation
-pages.forEach((p,i)=>{ p.style.transition="none"; p.style.transform=`translateX(${i*100}%)`; });
-requestAnimationFrame(()=>{ pages.forEach(p=>p.style.transition="transform 0.3s cubic-bezier(0.4,0,0.2,1)"); });
-
 // Override tab button clicks
 document.getElementById("tab-calendar").onclick=()=>setTab(0);
 document.getElementById("tab-charts").onclick=()=>setTab(1);
 
-wrap.addEventListener("touchstart",e=>{ swipeStartX=e.touches[0].clientX; swipeStartY=e.touches[0].clientY; },{passive:true});
-wrap.addEventListener("touchend",e=>{
+document.getElementById("app").addEventListener("touchstart",e=>{ swipeStartX=e.touches[0].clientX; swipeStartY=e.touches[0].clientY; },{passive:true});
+document.getElementById("app").addEventListener("touchend",e=>{
   const dx=e.changedTouches[0].clientX-swipeStartX;
   const dy=e.changedTouches[0].clientY-swipeStartY;
   if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>50) {
