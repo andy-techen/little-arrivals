@@ -7,11 +7,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Little Arrivals">
 <meta name="theme-color" content="#FDFBEE">
+<!-- PWA icon as inline SVG data URI -->
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23FEF8FB'/%3E%3Cellipse cx='90' cy='96' rx='42' ry='38' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M48 100 Q44 130 58 144 Q90 162 122 144 Q136 130 132 100 Q118 76 90 72 Q62 76 48 100 Z' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M55 106 Q90 94 125 106' fill='none' stroke='%23F0C0D8' stroke-width='3' stroke-linecap='round'/%3E%3Cellipse cx='90' cy='72' rx='36' ry='32' fill='%23FFF0E8' stroke='%23D4789A' stroke-width='3.5'/%3E%3Cellipse cx='74' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cellipse cx='106' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cpath d='M78 63 Q84 69 90 63 Q96 69 102 63' fill='none' stroke='%23C09090' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M82 82 Q90 88 98 82' fill='none' stroke='%23C8A0A0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M64 42 Q72 52 90 47 Q108 52 116 42 Q108 32 90 38 Q72 32 64 42 Z' fill='%23F9C8DF' stroke='%23D4789A' stroke-width='3'/%3E%3Ccircle cx='90' cy='42' r='7' fill='%23F0A8C4' stroke='%23D4789A' stroke-width='2.5'/%3E%3C%2Fsvg%3E">
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Little%20Arrivals%22%2C%22short_name%22%3A%22Arrivals%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FDFBEE%22%2C%22theme_color%22%3A%22%23FDFBEE%22%7D">
 <title>Little Arrivals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://db.onlinewebfonts.com/c/b70e7c042deeed25b01dc2c293227b3a?family=UhBee+Se_hyun" rel="stylesheet">
-<link href="https://db.onlinewebfonts.com/c/c65b7c1d3740f5358a796f8a806f0c81?family=UhBee+Se_hyun+Bold" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
@@ -740,6 +742,52 @@ document.getElementById("next-m").addEventListener("click",()=>{ vM++; if(vM>11)
 load(); renderHeader(); renderStrip(); renderCal(); renderDay();
 document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
 document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
+
+// Generate app icon dynamically as PNG and set as apple-touch-icon
+(function() {
+  const c = document.createElement("canvas");
+  c.width = 180; c.height = 180;
+  const ctx = c.getContext("2d");
+  // Background rounded rect
+  ctx.fillStyle = "#FEF8FB";
+  ctx.beginPath(); ctx.roundRect(0,0,180,180,40); ctx.fill();
+  // Swaddle body
+  ctx.fillStyle = "#FDE8F2"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 3.5;
+  ctx.beginPath();
+  ctx.moveTo(48,100); ctx.quadraticCurveTo(44,130,58,144);
+  ctx.quadraticCurveTo(90,162,122,144); ctx.quadraticCurveTo(136,130,132,100);
+  ctx.quadraticCurveTo(118,76,90,72); ctx.quadraticCurveTo(62,76,48,100);
+  ctx.fill(); ctx.stroke();
+  // Head
+  ctx.fillStyle = "#FFF0E8"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.ellipse(90,72,36,32,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // Cheeks
+  ctx.fillStyle = "rgba(245,184,207,0.55)";
+  ctx.beginPath(); ctx.ellipse(74,78,9,6,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(106,78,9,6,0,0,Math.PI*2); ctx.fill();
+  // Eyes
+  ctx.strokeStyle = "#C09090"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(78,63); ctx.quadraticCurveTo(84,69,90,63); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(90,63); ctx.quadraticCurveTo(96,69,102,63); ctx.stroke();
+  // Smile
+  ctx.strokeStyle = "#C8A0A0"; ctx.lineWidth = 2.2;
+  ctx.beginPath(); ctx.moveTo(82,82); ctx.quadraticCurveTo(90,88,98,82); ctx.stroke();
+  // Bow
+  ctx.fillStyle = "#F9C8DF"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(64,42); ctx.quadraticCurveTo(72,52,90,47);
+  ctx.quadraticCurveTo(108,52,116,42); ctx.quadraticCurveTo(108,32,90,38);
+  ctx.quadraticCurveTo(72,32,64,42);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#F0A8C4"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(90,42,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  // Set as apple-touch-icon
+  const url = c.toDataURL("image/png");
+  let link = document.querySelector("link[rel='apple-touch-icon']");
+  if(!link) { link = document.createElement("link"); link.rel = "apple-touch-icon"; document.head.appendChild(link); }
+  link.href = url;
+})();
+
 </script>
 </body>
 </html>
