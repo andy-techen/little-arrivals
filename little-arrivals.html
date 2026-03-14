@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Little Arrivals">
+<meta name="theme-color" content="#FDFBEE">
+<title>Little Arrivals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/b70e7c042deeed25b01dc2c293227b3a?family=UhBee+Se_hyun" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/c65b7c1d3740f5358a796f8a806f0c81?family=UhBee+Se_hyun+Bold" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #FDFBEE;
+  --paper: #FFFFFF;
+  --grid-line: rgba(160,140,60,0.07);
+
+  --pink: #FAD4E4;
+  --pink-mid: #F4C0D5;
+  --pink-deep: #C890AA;
+  --pink-bg: #FEF6FA;
+
+  --blue: #C0DFF0;
+  --blue-mid: #AACFE8;
+  --blue-deep: #78AACC;
+  --blue-bg: #F3FAFD;
+
+  --ink: #4A4038;
+  --ink-mid: #807060;
+  --ink-light: #B0A090;
+  --line: rgba(80,60,40,0.08);
+
+  --green-deep: #80B078;
+  --yellow: #FAF0A8;
+
+  --fd: 'Jua', sans-serif;
+  --fu: 'Figtree', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body { height:100%; background:var(--bg); font-family:var(--fu); color:var(--ink); overflow:hidden; }
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:28px 28px;
+  pointer-events:none; z-index:0;
+}
+
+#app {
+  height:100dvh;
+  display:flex; flex-direction:column;
+  max-width:430px; margin:0 auto;
+  position:relative; overflow:hidden; z-index:1;
+}
+
+.app-header {
+  padding:12px 20px 8px;
+  padding-top:max(14px,env(safe-area-inset-top));
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+}
+
+.app-logo { font-family:var(--fd); font-size:26px; color:var(--ink); line-height:1; }
+.app-logo span { color:var(--pink-deep); }
+
+.hdr-date { font-size:13px; font-weight:600; color:var(--ink-light); }
+
+.tab-bar {
+  display:flex; padding:0 20px 8px; gap:6px; flex-shrink:0;
+}
+
+.tab-btn {
+  flex:1; padding:7px 0;
+  border-radius:20px; border:1.5px solid transparent;
+  background:transparent; font-family:var(--fu);
+  font-size:13px; font-weight:600; color:var(--ink-light);
+  cursor:pointer; transition:all 0.15s;
+}
+
+.tab-btn.active {
+  background:#FFFFFF;
+  border-color:var(--line);
+  color:var(--ink);
+  box-shadow:0 2px 8px rgba(80,60,40,0.07);
+}
+
+.page { display:none; flex:1; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; }
+.page.active { display:block; }
+
+/* Strip */
+.month-strip {
+  background:#FFFFFF; border-radius:18px; border:1.5px solid var(--line);
+  padding:12px 8px; margin-bottom:14px;
+  display:flex; align-items:center; justify-content:space-around;
+}
+.strip-stat { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.strip-num { font-family:var(--fd); font-size:28px; line-height:1; }
+.strip-num.p { color:var(--pink-deep); }
+.strip-num.b { color:var(--blue-deep); }
+.strip-num.g { color:var(--green-deep); }
+.strip-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-light); }
+.strip-div { width:1px; height:36px; background:var(--line); }
+
+/* Cal card */
+.cal-card {
+  background:#FFFFFF; border-radius:18px; border:1.5px solid var(--line);
+  padding:16px 12px; margin-bottom:16px;
+}
+
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cal-month-wrap { text-align:center; }
+.cal-year { font-size:11px; font-weight:600; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
+
+.cal-month-name {
+  font-family:var(--fd); font-size:28px; color:var(--ink); line-height:1.2;
+  position:relative; display:inline-block;
+}
+.cal-month-name::after {
+  content:''; position:absolute; bottom:2px; left:-4px; right:-4px; height:10px;
+  background:rgba(111,184,220,0.25); border-radius:4px; z-index:-1;
+}
+
+.cal-arrow {
+  background:#FFFFFF; border:1.5px solid var(--line); border-radius:50%;
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; color:var(--ink-mid); flex-shrink:0; transition:transform 0.1s;
+}
+.cal-arrow:active { transform:scale(0.9); }
+
+.cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px; }
+.cal-wday { text-align:center; font-size:10px; font-weight:700; color:var(--ink-light); text-transform:uppercase; letter-spacing:0.5px; padding:3px 0; }
+
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+
+.cal-day {
+  aspect-ratio:1; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  padding-top:4px; cursor:pointer; border:1.5px solid transparent;
+  transition:background 0.12s; min-height:42px;
+}
+.cal-day:active { transform:scale(0.9); }
+.cal-day.empty { cursor:default; pointer-events:none; }
+.cal-day.today { background:#FAF0A8; border-color:rgba(160,140,40,0.2); }
+.cal-day.selected { border-color:var(--pink-deep); background:var(--pink-bg); }
+.cal-day.has-data:not(.today):not(.selected) { background:rgba(255,255,255,0.55); }
+
+.cal-day-num { font-family:var(--fd); font-size:13px; color:var(--ink); line-height:1; }
+.cal-day.today .cal-day-num { color:#7A5800; }
+
+.cal-faces { display:flex; flex-wrap:wrap; justify-content:center; gap:1px; margin-top:2px; padding:0 2px; }
+
+.cal-face {
+  width:10px; height:10px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.cal-face.girl { background:var(--pink-mid); }
+.cal-face.boy { background:var(--blue-mid); }
+
+/* Day */
+.day-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.day-title { font-family:var(--fd); font-size:22px; color:var(--ink); }
+.pill-row { display:flex; gap:6px; }
+.pill { display:flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:13px; font-weight:700; }
+.pill.g { background:#FEF6FA; color:#C890AA; }
+.pill.b { background:#F3FAFD; color:#78AACC; }
+.pill-dot { width:7px; height:7px; border-radius:50%; }
+.pill.g .pill-dot { background:var(--pink-mid); }
+.pill.b .pill-dot { background:var(--blue-mid); }
+
+.babies-list { display:flex; flex-direction:column; gap:10px; }
+
+.baby-card {
+  background:#FFFFFF; border-radius:16px; border:1.5px solid var(--line);
+  padding:14px; display:flex; align-items:center; gap:12px;
+  animation:popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{transform:scale(0.88) translateY(8px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+
+.baby-blob { width:52px; height:52px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+
+.baby-info { flex:1; min-width:0; }
+.baby-gender { font-family:var(--fd); font-size:17px; color:var(--ink); line-height:1.1; }
+.baby-time { font-size:12px; color:var(--ink-light); margin-top:2px; }
+.baby-note { font-size:12px; color:var(--ink-mid); margin-top:3px; font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.baby-del { background:none; border:none; cursor:pointer; color:var(--ink-light); font-size:16px; padding:6px; flex-shrink:0; }
+.baby-del:active { color:#E24B4A; }
+
+.empty-day { text-align:center; padding:28px 20px; background:#FFFFFF; border-radius:16px; border:1.5px dashed rgba(80,60,40,0.12); }
+.empty-face { font-size:38px; display:block; margin-bottom:6px; opacity:0.35; }
+.empty-text { font-family:var(--fd); font-size:17px; color:var(--ink-light); }
+
+/* FAB */
+.fab {
+  position:fixed; bottom:calc(18px + env(safe-area-inset-bottom)); right:20px;
+  width:56px; height:56px; border-radius:50%;
+  background:#F4C0D5; border:2px solid #C890AA;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-family:var(--fd); font-size:30px; color:white; line-height:1;
+  z-index:100; box-shadow:0 4px 16px rgba(180,120,150,0.2); transition:transform 0.15s;
+}
+.fab:active { transform:scale(0.9); }
+
+/* Sheet */
+.overlay {
+  position:fixed; inset:0; background:rgba(30,20,10,0.28);
+  z-index:200; opacity:0; pointer-events:none; transition:opacity 0.22s;
+}
+.overlay.open { opacity:1; pointer-events:all; }
+
+.sheet {
+  position:fixed; bottom:0; left:50%;
+  transform:translateX(-50%) translateY(100%);
+  width:100%; max-width:430px;
+  background:#FDFBEE; border-radius:24px 24px 0 0; border:1.5px solid var(--line); border-bottom:none;
+  padding:20px 24px calc(32px + env(safe-area-inset-bottom));
+  z-index:201; transition:transform 0.28s cubic-bezier(0.34,1.4,0.64,1);
+}
+.sheet.open { transform:translateX(-50%) translateY(0); }
+
+.sheet-handle { width:38px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 18px; }
+.sheet-title { font-family:var(--fd); font-size:24px; color:var(--ink); margin-bottom:18px; text-align:center; }
+
+.gender-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
+
+.gnd-btn {
+  border-radius:18px; border:2px solid var(--line); padding:18px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  cursor:pointer; background:#FFFFFF; transition:all 0.13s;
+}
+.gnd-btn.girl.sel { background:var(--pink-bg); border-color:var(--pink-mid); }
+.gnd-btn.boy.sel { background:var(--blue-bg); border-color:var(--blue-mid); }
+.gnd-btn:active { transform:scale(0.95); }
+
+.gnd-face { width:56px; height:56px; display:flex; align-items:center; justify-content:center; }
+
+.gnd-label { font-family:var(--fd); font-size:18px; color:var(--ink); }
+
+.notes-lbl { display:block; font-size:13px; font-weight:600; color:var(--ink-mid); margin-bottom:7px; }
+.notes-ta {
+  width:100%; border:1.5px solid var(--line); border-radius:12px;
+  padding:11px 13px; font-family:var(--fu); font-size:15px; color:var(--ink);
+  background:#FFFFFF; resize:none; height:76px; outline:none; margin-bottom:16px;
+}
+.notes-ta:focus { border-color:var(--pink-mid); }
+.notes-ta::placeholder { color:var(--ink-light); }
+
+.save-btn {
+  width:100%; padding:15px; border-radius:14px; border:none;
+  background:var(--pink-mid); color:white;
+  font-family:var(--fd); font-size:20px;
+  cursor:pointer; box-shadow:0 4px 14px rgba(180,120,150,0.18); transition:transform 0.1s;
+}
+.save-btn:active { transform:scale(0.97); }
+
+/* Charts */
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.stat-card { background:#FFFFFF; border-radius:16px; border:1.5px solid var(--line); padding:14px 16px; display:flex; flex-direction:column; gap:4px; }
+.stat-card-num { font-family:var(--fd); font-size:32px; line-height:1; }
+.stat-card-num.p { color:var(--pink-deep); }
+.stat-card-num.b { color:var(--blue-deep); }
+.stat-card-num.g { color:var(--green-deep); }
+.stat-card-num.y { color:#7A6000; }
+.stat-card-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.7px; color:var(--ink-light); }
+
+.chart-card { background:#FFFFFF; border-radius:18px; border:1.5px solid var(--line); padding:16px; margin-bottom:14px; }
+.chart-card-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--ink-light); margin-bottom:14px; }
+.chart-wrap { position:relative; height:180px; }
+
+.month-row { background:#FFFFFF; border-radius:14px; border:1.5px solid var(--line); padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.month-row-name { font-family:var(--fd); font-size:15px; color:var(--ink); width:48px; flex-shrink:0; }
+.month-bar-wrap { flex:1; display:flex; flex-direction:column; gap:5px; }
+.month-bar-row { display:flex; align-items:center; gap:6px; }
+.month-bar-bg { flex:1; height:9px; background:rgba(80,60,40,0.07); border-radius:9px; overflow:hidden; }
+.month-bar-fill { height:100%; border-radius:9px; transition:width 0.4s ease; }
+.month-bar-fill.p { background:var(--pink-mid); }
+.month-bar-fill.b { background:var(--blue-mid); }
+.month-bar-count { font-size:11px; font-weight:700; color:var(--ink-mid); width:16px; text-align:right; flex-shrink:0; }
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="app-header">
+    <div class="app-logo">Little <span>Arrivals</span></div>
+    <div class="hdr-date" id="hdr-date"></div>
+  </header>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-calendar" onclick="switchTab('calendar')">Calendar</button>
+    <button class="tab-btn" id="tab-charts" onclick="switchTab('charts')">Charts</button>
+  </div>
+
+  <!-- Calendar Page -->
+  <div class="page active" id="page-calendar">
+    <div class="month-strip">
+      <div class="strip-stat">
+        <div class="strip-num p" id="strip-girls">0</div>
+        <div class="strip-label">Girls</div>
+      </div>
+      <div class="strip-div"></div>
+      <div class="strip-stat">
+        <div class="strip-num b" id="strip-boys">0</div>
+        <div class="strip-label">Boys</div>
+      </div>
+      <div class="strip-div"></div>
+      <div class="strip-stat">
+        <div class="strip-num g" id="strip-total">0</div>
+        <div class="strip-label">This Month</div>
+      </div>
+    </div>
+
+    <div class="cal-card">
+      <div class="cal-nav">
+        <button class="cal-arrow" id="prev-m">&#8249;</button>
+        <div class="cal-month-wrap">
+          <div class="cal-year" id="cal-year"></div>
+          <div class="cal-month-name" id="cal-month-name"></div>
+        </div>
+        <button class="cal-arrow" id="next-m">&#8250;</button>
+      </div>
+      <div class="cal-weekdays">
+        <div class="cal-wday">S</div><div class="cal-wday">M</div>
+        <div class="cal-wday">T</div><div class="cal-wday">W</div>
+        <div class="cal-wday">T</div><div class="cal-wday">F</div>
+        <div class="cal-wday">S</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <div class="day-header">
+      <div class="day-title" id="day-label"></div>
+      <div class="pill-row">
+        <div class="pill g"><div class="pill-dot"></div><span id="day-girls">0</span></div>
+        <div class="pill b"><div class="pill-dot"></div><span id="day-boys">0</span></div>
+      </div>
+    </div>
+    <div class="babies-list" id="babies-list"></div>
+  </div>
+
+  <!-- Charts Page -->
+  <div class="page" id="page-charts">
+    <div style="padding-top:4px">
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="chart-card">
+        <div class="chart-card-title">Deliveries — Last 30 Days</div>
+        <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-title">Gender Split</div>
+        <div style="display:flex;align-items:center;gap:20px">
+          <div style="width:130px;height:130px;flex-shrink:0;position:relative"><canvas id="chart-donut"></canvas></div>
+          <div id="donut-legend" style="flex:1"></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-title">By Day of Week</div>
+        <div id="busy-days"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-title">Monthly Breakdown</div>
+        <div id="monthly-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="fab" id="fab">+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">New Arrival &#128149;</div>
+  <div class="gender-row">
+    <button class="gnd-btn girl" id="btn-girl" onclick="selGender('girl')">
+      <div class="gnd-face" id="gnd-face-girl"></div>
+      <div class="gnd-label">Girl</div>
+    </button>
+    <button class="gnd-btn boy" id="btn-boy" onclick="selGender('boy')">
+      <div class="gnd-face" id="gnd-face-boy"></div>
+      <div class="gnd-label">Boy</div>
+    </button>
+  </div>
+  <label class="notes-lbl">Notes (optional)</label>
+  <textarea class="notes-ta" id="notes-ta" placeholder="Any notes about this delivery..."></textarea>
+  <button class="save-btn" id="save-btn">Record Arrival</button>
+</div>
+
+<script>
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+let vY = new Date().getFullYear();
+let vM = new Date().getMonth();
+let selDate = todayKey();
+let sg = null;
+let data = {};
+let cDaily = null, cDonut = null;
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+}
+function dKey(y,m,d) { return `${y}-${p2(m+1)}-${p2(d)}`; }
+function p2(n) { return String(n).padStart(2,"0"); }
+function load() { try { data = JSON.parse(localStorage.getItem("la3")||"{}"); } catch(e) { data={}; } }
+function save() { localStorage.setItem("la3", JSON.stringify(data)); }
+function babies(k) { return data[k]||[]; }
+
+function monthStats(y,m) {
+  const pfx = `${y}-${p2(m+1)}`;
+  let g=0,b=0;
+  Object.entries(data).forEach(([k,v])=>{ if(k.startsWith(pfx)) v.forEach(x=>x.gender==="girl"?g++:b++); });
+  return {g,b,total:g+b};
+}
+
+function allStats() {
+  let g=0,b=0,ds=new Set();
+  Object.entries(data).forEach(([k,v])=>{ if(v.length){ds.add(k);v.forEach(x=>x.gender==="girl"?g++:b++);} });
+  return {g,b,total:g+b,days:ds.size};
+}
+
+function switchTab(t) {
+  ["calendar","charts"].forEach(id=>{
+    document.getElementById("page-"+id).classList.toggle("active",id===t);
+    document.getElementById("tab-"+id).classList.toggle("active",id===t);
+  });
+  if(t==="charts") renderCharts();
+}
+
+function renderHeader() {
+  const d = new Date();
+  document.getElementById("hdr-date").textContent = `${DAYS[d.getDay()]} ${d.getDate()} ${MS[d.getMonth()]}`;
+}
+
+function renderStrip() {
+  const s = monthStats(vY,vM);
+  document.getElementById("strip-girls").textContent = s.g;
+  document.getElementById("strip-boys").textContent = s.b;
+  document.getElementById("strip-total").textContent = s.total;
+}
+
+function renderCal() {
+  document.getElementById("cal-year").textContent = vY;
+  document.getElementById("cal-month-name").textContent = MONTHS[vM];
+  const grid = document.getElementById("cal-grid");
+  grid.innerHTML = "";
+  const first = new Date(vY,vM,1).getDay();
+  const total = new Date(vY,vM+1,0).getDate();
+  const today = todayKey();
+
+  for(let i=0;i<first;i++) { const e=document.createElement("div"); e.className="cal-day empty"; grid.appendChild(e); }
+
+  for(let d=1;d<=total;d++) {
+    const key = dKey(vY,vM,d);
+    const bs = babies(key);
+    const el = document.createElement("div");
+    let cls = "cal-day";
+    if(key===today) cls+=" today";
+    if(key===selDate) cls+=" selected";
+    if(bs.length) cls+=" has-data";
+    el.className = cls;
+
+    const max = Math.min(bs.length,4);
+    let fh = "";
+    bs.slice(0,max).forEach(b=>{
+      fh+=`<div class="cal-face ${b.gender}">
+        <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3.5" fill="white" opacity="0.3"/><circle cx="2.8" cy="3.5" r="0.7" fill="white"/><circle cx="5.2" cy="3.5" r="0.7" fill="white"/><path d="M2.8 5.5 Q4 7 5.2 5.5" stroke="white" stroke-width="0.7" stroke-linecap="round" fill="none"/></svg>
+      </div>`;
+    });
+    if(bs.length>4) fh+=`<div style="font-size:7px;font-weight:700;color:var(--ink-mid);align-self:center">+${bs.length-4}</div>`;
+
+    el.innerHTML=`<div class="cal-day-num">${d}</div><div class="cal-faces">${fh}</div>`;
+    el.addEventListener("click",()=>{ selDate=key; renderCal(); renderDay(); });
+    grid.appendChild(el);
+  }
+}
+
+function renderDay() {
+  const key = selDate;
+  const [y,m,d] = key.split("-").map(Number);
+  const dt = new Date(y,m-1,d);
+  document.getElementById("day-label").textContent = `${DAYS[dt.getDay()]}, ${MS[m-1]} ${d}`;
+  const bs = babies(key);
+  document.getElementById("day-girls").textContent = bs.filter(x=>x.gender==="girl").length;
+  document.getElementById("day-boys").textContent = bs.filter(x=>x.gender==="boy").length;
+
+  const list = document.getElementById("babies-list");
+  if(!bs.length) {
+    list.innerHTML=`<div class="empty-day"><span class="empty-face">&#128120;</span><div class="empty-text">No arrivals recorded yet</div></div>`;
+    return;
+  }
+  list.innerHTML = bs.map((b,i)=>{
+    const ig = b.gender==="girl";
+    return `<div class="baby-card">
+      <div class="baby-blob ${b.gender}">${ig?girlSVG():boySVG()}</div>
+      <div class="baby-info">
+        <div class="baby-gender">Baby ${ig?"Girl":"Boy"}</div>
+        ${b.time?`<div class="baby-time">${b.time}</div>`:""}
+        ${b.note?`<div class="baby-note">${esc(b.note)}</div>`:""}
+      </div>
+      <button class="baby-del" onclick="delBaby('${key}',${i})">&#10005;</button>
+    </div>`;
+  }).join("");
+}
+
+function delBaby(key,idx) {
+  if(!data[key]) return;
+  data[key].splice(idx,1);
+  if(!data[key].length) delete data[key];
+  save(); renderCal(); renderStrip(); renderDay();
+}
+
+function selGender(g) {
+  sg = g;
+  document.getElementById("btn-girl").classList.toggle("sel",g==="girl");
+  document.getElementById("btn-boy").classList.toggle("sel",g==="boy");
+}
+
+function openSheet() {
+  sg = null;
+  document.getElementById("btn-girl").classList.remove("sel");
+  document.getElementById("btn-boy").classList.remove("sel");
+  document.getElementById("notes-ta").value = "";
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("sheet").classList.add("open");
+}
+
+function closeSheet() {
+  document.getElementById("overlay").classList.remove("open");
+  document.getElementById("sheet").classList.remove("open");
+}
+
+function saveArrival() {
+  if(!sg) {
+    const gr = document.querySelector(".gender-row");
+    gr.style.animation="none";
+    requestAnimationFrame(()=>gr.style.animation="shake 0.3s ease");
+    return;
+  }
+  const note = document.getElementById("notes-ta").value.trim();
+  const now = new Date();
+  const time = now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+  if(!data[selDate]) data[selDate]=[];
+  data[selDate].push({gender:sg,note,time});
+  save(); closeSheet(); renderCal(); renderStrip(); renderDay();
+}
+
+function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function renderCharts() {
+  const all = allStats();
+
+  document.getElementById("stat-grid").innerHTML=`
+    <div class="stat-card"><div class="stat-card-num p">${all.g}</div><div class="stat-card-label">Total Girls</div></div>
+    <div class="stat-card"><div class="stat-card-num b">${all.b}</div><div class="stat-card-label">Total Boys</div></div>
+    <div class="stat-card"><div class="stat-card-num g">${all.total}</div><div class="stat-card-label">Total Births</div></div>
+    <div class="stat-card"><div class="stat-card-num y">${all.days}</div><div class="stat-card-label">Days Recorded</div></div>`;
+
+  const today = new Date();
+  const labels=[], gd=[], bd=[];
+  for(let i=29;i>=0;i--) {
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    const key=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+    const bs=babies(key);
+    const mm=p2(d.getMonth()+1), dd=p2(d.getDate());
+    labels.push(i===0?"Today":`${mm}/${dd}`);
+    gd.push(bs.filter(x=>x.gender==="girl").length);
+    bd.push(bs.filter(x=>x.gender==="boy").length);
+  }
+
+  const ctxD = document.getElementById("chart-daily").getContext("2d");
+  if(cDaily) cDaily.destroy();
+  cDaily = new Chart(ctxD,{
+    type:"bar",
+    data:{labels,datasets:[
+      {label:"Girls",data:gd,backgroundColor:"rgba(244,192,213,0.75)",borderRadius:5,borderSkipped:false},
+      {label:"Boys",data:bd,backgroundColor:"rgba(170,207,232,0.75)",borderRadius:5,borderSkipped:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{maxTicksLimit:6,font:{size:10,family:"Figtree"},color:"#A09080"}},
+        y:{grid:{color:"rgba(80,60,40,0.06)"},ticks:{stepSize:1,precision:0,font:{size:10,family:"Figtree"},color:"#A09080"},beginAtZero:true,suggestedMax:5}
+      }
+    }
+  });
+
+  const ctxDo = document.getElementById("chart-donut").getContext("2d");
+  if(cDonut) cDonut.destroy();
+  cDonut = new Chart(ctxDo,{
+    type:"doughnut",
+    data:{
+      labels:["Girls","Boys"],
+      datasets:[{
+        data:all.total?[all.g,all.b]:[1,1],
+        backgroundColor:["rgba(244,192,213,0.85)","rgba(170,207,232,0.85)"],
+        borderWidth:0,hoverOffset:4
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:"65%",
+      plugins:{legend:{display:false},tooltip:{enabled:all.total>0}}
+    }
+  });
+  const gPct = all.total ? Math.round((all.g/all.total)*100) : 50;
+  const bPct = all.total ? 100-gPct : 50;
+  document.getElementById("donut-legend").innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:12px;height:12px;border-radius:50%;background:rgba(244,192,213,0.9);flex-shrink:0"></div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--ink-mid)">Girls</div>
+          <div style="font-family:var(--fd);font-size:20px;color:var(--pink-deep);line-height:1">${all.g} <span style="font-family:var(--fu);font-size:11px;color:var(--ink-light)">${gPct}%</span></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:12px;height:12px;border-radius:50%;background:rgba(170,207,232,0.9);flex-shrink:0"></div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--ink-mid)">Boys</div>
+          <div style="font-family:var(--fd);font-size:20px;color:var(--blue-deep);line-height:1">${all.b} <span style="font-family:var(--fu);font-size:11px;color:var(--ink-light)">${bPct}%</span></div>
+        </div>
+      </div>
+    </div>`;
+
+  const dc = DAYS.map((_,i)=>({day:DAYS[i],g:0,b:0}));
+  Object.entries(data).forEach(([k,v])=>{
+    const dt=new Date(k+"T12:00:00");
+    v.forEach(x=>x.gender==="girl"?dc[dt.getDay()].g++:dc[dt.getDay()].b++);
+  });
+  const sorted=[...dc].sort((a,b)=>(b.g+b.b)-(a.g+a.b)).slice(0,5);
+  const maxB=Math.max(1,...sorted.map(x=>x.g+x.b));
+  document.getElementById("busy-days").innerHTML=sorted.map(x=>{
+    const t=x.g+x.b, w=Math.round((t/maxB)*100);
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+      <div style="width:32px;font-size:12px;font-weight:600;color:var(--ink-mid);flex-shrink:0">${x.day}</div>
+      <div style="flex:1;height:10px;background:rgba(80,60,40,0.07);border-radius:10px;overflow:hidden">
+        <div style="height:100%;width:${w}%;background:linear-gradient(90deg,var(--pink-mid),var(--blue-mid));border-radius:10px"></div>
+      </div>
+      <div style="width:20px;font-size:12px;font-weight:700;color:var(--ink-mid);text-align:right;flex-shrink:0">${t}</div>
+    </div>`;
+  }).join("");
+
+  const mm={};
+  Object.entries(data).forEach(([k,v])=>{
+    const [y,m]=k.split("-"); const mk=`${y}-${m}`;
+    if(!mm[mk]) mm[mk]={g:0,b:0};
+    v.forEach(x=>x.gender==="girl"?mm[mk].g++:mm[mk].b++);
+  });
+  const smm=Object.entries(mm).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
+  const maxMm=Math.max(1,...smm.map(([,v])=>v.g+v.b));
+  document.getElementById("monthly-rows").innerHTML=smm.map(([mk,v])=>{
+    const [y,m]=mk.split("-");
+    const lbl=`${MS[parseInt(m,10)-1]} '${y.slice(2)}`;
+    const gw=Math.round((v.g/maxMm)*100), bw=Math.round((v.b/maxMm)*100);
+    return `<div class="month-row">
+      <div class="month-row-name">${lbl}</div>
+      <div class="month-bar-wrap">
+        <div class="month-bar-row">
+          <div class="month-bar-bg"><div class="month-bar-fill p" style="width:${gw}%"></div></div>
+          <div class="month-bar-count" style="color:var(--pink-deep)">${v.g}</div>
+        </div>
+        <div class="month-bar-row">
+          <div class="month-bar-bg"><div class="month-bar-fill b" style="width:${bw}%"></div></div>
+          <div class="month-bar-count" style="color:var(--blue-deep)">${v.b}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join()||`<div style="text-align:center;padding:20px;font-family:var(--fd);font-size:16px;color:var(--ink-light)">No data yet — start recording!</div>`;
+}
+
+
+// ── Swaddled baby SVG illustrations ──
+function girlSVG(size) {
+  size = size||52;
+  // viewBox: 0 0 80 88 — girl fits circle perfectly with bow tucked in
+  return `<svg width="${size}" height="${size}" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="46" r="38" fill="#FEF8FB"/>
+    <path d="M16 48 Q13 66 24 76 Q40 86 56 76 Q67 66 64 48 Q56 34 40 32 Q24 34 16 48 Z" fill="#FDE8F2" stroke="#D4789A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23 52 Q40 45 57 52" fill="none" stroke="#F0C0D8" stroke-width="1.6" stroke-linecap="round"/>
+    <ellipse cx="40" cy="30" rx="18" ry="16" fill="#FFF0E8" stroke="#D4789A" stroke-width="1.8"/>
+    <ellipse cx="30" cy="33" rx="4.5" ry="3" fill="#F5B8CF" opacity="0.55"/>
+    <ellipse cx="50" cy="33" rx="4.5" ry="3" fill="#F5B8CF" opacity="0.55"/>
+    <path d="M33 23 Q36 27 39 23" fill="none" stroke="#C09090" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M41 23 Q44 27 47 23" fill="none" stroke="#C09090" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M38 28 Q40 30 42 28" fill="none" stroke="#C8A0A0" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M34 35 Q40 39 46 35" fill="none" stroke="#C8A0A0" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M30 15 Q35 20 40 17 Q45 20 50 15 Q45 10 40 14 Q35 10 30 15 Z" fill="#F9C8DF" stroke="#D4789A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="15" r="3" fill="#F0A8C4" stroke="#D4789A" stroke-width="1.1"/>
+    <path d="M16 60 Q7 56 9 48 Q13 43 17 50" fill="#FFF0E8" stroke="#D4789A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M64 60 Q73 56 71 48 Q67 43 63 50" fill="#FFF0E8" stroke="#D4789A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function boySVG(size) {
+  size = size||52;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 80 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="46" r="38" fill="#F2FAFD"/>
+    <path d="M16 50 Q13 68 24 78 Q40 88 56 78 Q67 68 64 50 Q56 36 40 34 Q24 36 16 50 Z" fill="#E4F3FA" stroke="#5A9DC8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M23 54 Q40 47 57 54" fill="none" stroke="#AADCF0" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M21 66 Q40 60 59 66" fill="none" stroke="#AADCF0" stroke-width="1.1" stroke-linecap="round" opacity="0.7"/>
+    <ellipse cx="40" cy="32" rx="18" ry="16" fill="#FFF0E8" stroke="#5A9DC8" stroke-width="1.8"/>
+    <ellipse cx="30" cy="35" rx="4.5" ry="3" fill="#8EC4E4" opacity="0.45"/>
+    <ellipse cx="50" cy="35" rx="4.5" ry="3" fill="#8EC4E4" opacity="0.45"/>
+    <path d="M33 25 Q36 29 39 25" fill="none" stroke="#8AAABB" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M41 25 Q44 29 47 25" fill="none" stroke="#8AAABB" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M38 30 Q40 32 42 30" fill="none" stroke="#9AAABB" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M34 37 Q40 41 46 37" fill="none" stroke="#9AAABB" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M22 18 Q20 8 40 4 Q60 8 58 18 Z" fill="#8EC4E4" stroke="#5A9DC8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 18 Q40 24 60 18" fill="#C0DFF0" stroke="#5A9DC8" stroke-width="1.4" stroke-linecap="round"/>
+    <circle cx="40" cy="4" r="4.5" fill="#C0DFF0" stroke="#5A9DC8" stroke-width="1.4"/>
+    <path d="M16 62 Q7 58 9 50 Q13 45 17 52" fill="#FFF0E8" stroke="#5A9DC8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M64 62 Q73 58 71 50 Q67 45 63 52" fill="#FFF0E8" stroke="#5A9DC8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+document.getElementById("fab").addEventListener("click",openSheet);
+document.getElementById("overlay").addEventListener("click",closeSheet);
+document.getElementById("save-btn").addEventListener("click",saveArrival);
+document.getElementById("prev-m").addEventListener("click",()=>{ vM--; if(vM<0){vM=11;vY--;} renderCal();renderStrip(); });
+document.getElementById("next-m").addEventListener("click",()=>{ vM++; if(vM>11){vM=0;vY++;} renderCal();renderStrip(); });
+
+load(); renderHeader(); renderStrip(); renderCal(); renderDay();
+document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
+document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
+</script>
+</body>
+</html>
