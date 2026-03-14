@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Little Arrivals">
@@ -95,8 +95,8 @@ body::before {
   box-shadow:0 2px 8px rgba(80,60,40,0.07);
 }
 
-.page { display:none; flex:1; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; }
-.page.active { display:block; }
+.pages-wrap { flex:1; display:flex; overflow:hidden; position:relative; }
+.page { flex:0 0 100%; overflow-y:auto; overflow-x:hidden; padding:0 16px 100px; -webkit-overflow-scrolling:touch; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); will-change:transform; }
 
 /* Strip */
 .month-strip {
@@ -207,7 +207,7 @@ body::before {
   width:56px; height:56px; border-radius:50%;
   background:#F4C0D5; border:2px solid #C890AA;
   display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-family:var(--fd); font-size:30px; color:white; line-height:1;
+  cursor:pointer; font-size:28px; color:white; line-height:56px; padding-bottom:2px;
   z-index:100; box-shadow:0 4px 16px rgba(180,120,150,0.2); transition:transform 0.15s;
 }
 .fab:active { transform:scale(0.9); }
@@ -258,11 +258,15 @@ body::before {
 
 .save-btn {
   width:100%; padding:15px; border-radius:14px; border:none;
-  background:var(--pink-mid); color:white;
+  background:#E0D0D8; color:#B8A8B0;
   font-family:var(--fd); font-size:20px;
-  cursor:pointer; box-shadow:0 4px 14px rgba(180,120,150,0.18); transition:transform 0.1s;
+  cursor:default; transition:all 0.2s; box-shadow:none;
 }
-.save-btn:active { transform:scale(0.97); }
+.save-btn.enabled {
+  background:var(--pink-mid); color:white;
+  cursor:pointer; box-shadow:0 4px 14px rgba(180,120,150,0.18);
+}
+.save-btn.enabled:active { transform:scale(0.97); }
 
 /* Charts */
 .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
@@ -304,8 +308,9 @@ body::before {
     <button class="tab-btn" id="tab-charts" onclick="switchTab('charts')">Charts</button>
   </div>
 
+  <div class="pages-wrap" id="pages-wrap">
   <!-- Calendar Page -->
-  <div class="page active" id="page-calendar">
+  <div class="page" id="page-calendar">
     <div class="month-strip">
       <div class="strip-stat">
         <div class="strip-num p" id="strip-girls">0</div>
@@ -357,7 +362,14 @@ body::before {
       <div class="stat-grid" id="stat-grid"></div>
 
       <div class="chart-card">
-        <div class="chart-card-title">Deliveries — Last 30 Days</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div class="chart-card-title" style="margin-bottom:0" id="daily-chart-title">Daily Deliveries</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="cal-arrow" id="chart-prev-m" style="width:28px;height:28px;font-size:14px">&#8249;</button>
+            <div style="font-family:var(--fd);font-size:15px;color:var(--ink);min-width:80px;text-align:center" id="chart-month-label"></div>
+            <button class="cal-arrow" id="chart-next-m" style="width:28px;height:28px;font-size:14px">&#8250;</button>
+          </div>
+        </div>
         <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
       </div>
 
@@ -373,13 +385,9 @@ body::before {
         <div class="chart-card-title">By Day of Week</div>
         <div id="busy-days"></div>
       </div>
-
-      <div class="chart-card">
-        <div class="chart-card-title">Monthly Breakdown</div>
-        <div id="monthly-rows"></div>
-      </div>
     </div>
   </div>
+</div>
 </div>
 
 <button class="fab" id="fab">+</button>
@@ -414,6 +422,7 @@ let selDate = todayKey();
 let sg = null;
 let data = {};
 let cDaily = null, cDonut = null;
+let chartVY = new Date().getFullYear(), chartVM = new Date().getMonth();
 
 function todayKey() {
   const d = new Date();
@@ -438,13 +447,7 @@ function allStats() {
   return {g,b,total:g+b,days:ds.size};
 }
 
-function switchTab(t) {
-  ["calendar","charts"].forEach(id=>{
-    document.getElementById("page-"+id).classList.toggle("active",id===t);
-    document.getElementById("tab-"+id).classList.toggle("active",id===t);
-  });
-  if(t==="charts") renderCharts();
-}
+function switchTab(t) { setTab(t==="charts"?1:0); }
 
 function renderHeader() {
   const d = new Date();
@@ -533,6 +536,7 @@ function selGender(g) {
   sg = g;
   document.getElementById("btn-girl").classList.toggle("sel",g==="girl");
   document.getElementById("btn-boy").classList.toggle("sel",g==="boy");
+  document.getElementById("save-btn").classList.add("enabled");
 }
 
 function openSheet() {
@@ -540,6 +544,7 @@ function openSheet() {
   document.getElementById("btn-girl").classList.remove("sel");
   document.getElementById("btn-boy").classList.remove("sel");
   document.getElementById("notes-ta").value = "";
+  document.getElementById("save-btn").classList.remove("enabled");
   document.getElementById("overlay").classList.add("open");
   document.getElementById("sheet").classList.add("open");
 }
@@ -566,6 +571,42 @@ function saveArrival() {
 
 function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
+function renderDailyChart() {
+  const daysInMonth = new Date(chartVY, chartVM+1, 0).getDate();
+  const labels=[], gd=[], bd=[];
+  for(let d=1;d<=daysInMonth;d++) {
+    const key=dKey(chartVY,chartVM,d);
+    const bs=babies(key);
+    labels.push(`${p2(chartVM+1)}/${p2(d)}`);
+    gd.push(bs.filter(x=>x.gender==="girl").length);
+    bd.push(bs.filter(x=>x.gender==="boy").length);
+  }
+  const maxVal=Math.max(5,...gd.map((g,i)=>g+bd[i]));
+  document.getElementById("chart-month-label").textContent=`${MS[chartVM]} ${chartVY}`;
+
+  const ctxD = document.getElementById("chart-daily").getContext("2d");
+  if(cDaily) cDaily.destroy();
+  cDaily = new Chart(ctxD,{
+    type:"bar",
+    data:{labels,datasets:[
+      {label:"Girls",data:gd,backgroundColor:"rgba(244,192,213,0.8)",borderRadius:4,borderSkipped:false},
+      {label:"Boys",data:bd,backgroundColor:"rgba(170,207,232,0.8)",borderRadius:4,borderSkipped:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:([t])=>{
+        const d=parseInt(t.label.split("/")[1],10);
+        return `${MS[chartVM]} ${d}, ${chartVY}`;
+      }}}},
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{maxTicksLimit:10,font:{size:9,family:"Figtree"},color:"#B0A090"}},
+        y:{stacked:true,grid:{color:"rgba(80,60,40,0.05)"},ticks:{stepSize:1,precision:0,font:{size:10,family:"Figtree"},color:"#B0A090"},beginAtZero:true,max:maxVal}
+      }
+    }
+  });
+}
+
+
 function renderCharts() {
   const all = allStats();
 
@@ -575,35 +616,7 @@ function renderCharts() {
     <div class="stat-card"><div class="stat-card-num g">${all.total}</div><div class="stat-card-label">Total Births</div></div>
     <div class="stat-card"><div class="stat-card-num y">${all.days}</div><div class="stat-card-label">Days Recorded</div></div>`;
 
-  const today = new Date();
-  const labels=[], gd=[], bd=[];
-  for(let i=29;i>=0;i--) {
-    const d=new Date(today); d.setDate(d.getDate()-i);
-    const key=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
-    const bs=babies(key);
-    const mm=p2(d.getMonth()+1), dd=p2(d.getDate());
-    labels.push(i===0?"Today":`${mm}/${dd}`);
-    gd.push(bs.filter(x=>x.gender==="girl").length);
-    bd.push(bs.filter(x=>x.gender==="boy").length);
-  }
-
-  const ctxD = document.getElementById("chart-daily").getContext("2d");
-  if(cDaily) cDaily.destroy();
-  cDaily = new Chart(ctxD,{
-    type:"bar",
-    data:{labels,datasets:[
-      {label:"Girls",data:gd,backgroundColor:"rgba(244,192,213,0.75)",borderRadius:5,borderSkipped:false},
-      {label:"Boys",data:bd,backgroundColor:"rgba(170,207,232,0.75)",borderRadius:5,borderSkipped:false}
-    ]},
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{grid:{display:false},ticks:{maxTicksLimit:6,font:{size:10,family:"Figtree"},color:"#A09080"}},
-        y:{grid:{color:"rgba(80,60,40,0.06)"},ticks:{stepSize:1,precision:0,font:{size:10,family:"Figtree"},color:"#A09080"},beginAtZero:true,suggestedMax:5}
-      }
-    }
-  });
+  renderDailyChart();
 
   const ctxDo = document.getElementById("chart-donut").getContext("2d");
   if(cDonut) cDonut.destroy();
@@ -660,32 +673,6 @@ function renderCharts() {
     </div>`;
   }).join("");
 
-  const mm={};
-  Object.entries(data).forEach(([k,v])=>{
-    const [y,m]=k.split("-"); const mk=`${y}-${m}`;
-    if(!mm[mk]) mm[mk]={g:0,b:0};
-    v.forEach(x=>x.gender==="girl"?mm[mk].g++:mm[mk].b++);
-  });
-  const smm=Object.entries(mm).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,6);
-  const maxMm=Math.max(1,...smm.map(([,v])=>v.g+v.b));
-  document.getElementById("monthly-rows").innerHTML=smm.map(([mk,v])=>{
-    const [y,m]=mk.split("-");
-    const lbl=`${MS[parseInt(m,10)-1]} '${y.slice(2)}`;
-    const gw=Math.round((v.g/maxMm)*100), bw=Math.round((v.b/maxMm)*100);
-    return `<div class="month-row">
-      <div class="month-row-name">${lbl}</div>
-      <div class="month-bar-wrap">
-        <div class="month-bar-row">
-          <div class="month-bar-bg"><div class="month-bar-fill p" style="width:${gw}%"></div></div>
-          <div class="month-bar-count" style="color:var(--pink-deep)">${v.g}</div>
-        </div>
-        <div class="month-bar-row">
-          <div class="month-bar-bg"><div class="month-bar-fill b" style="width:${bw}%"></div></div>
-          <div class="month-bar-count" style="color:var(--blue-deep)">${v.b}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join()||`<div style="text-align:center;padding:20px;font-family:var(--fd);font-size:16px;color:var(--ink-light)">No data yet — start recording!</div>`;
 }
 
 
@@ -738,6 +725,39 @@ document.getElementById("overlay").addEventListener("click",closeSheet);
 document.getElementById("save-btn").addEventListener("click",saveArrival);
 document.getElementById("prev-m").addEventListener("click",()=>{ vM--; if(vM<0){vM=11;vY--;} renderCal();renderStrip(); });
 document.getElementById("next-m").addEventListener("click",()=>{ vM++; if(vM>11){vM=0;vY++;} renderCal();renderStrip(); });
+document.getElementById("chart-prev-m").addEventListener("click",()=>{ chartVM--; if(chartVM<0){chartVM=11;chartVY--;} renderDailyChart(); });
+document.getElementById("chart-next-m").addEventListener("click",()=>{ chartVM++; if(chartVM>11){chartVM=0;chartVY++;} renderDailyChart(); });
+
+// ── Swipe between tabs ──
+let swipeStartX=0, swipeStartY=0, currentTab=0;
+const wrap = document.getElementById("pages-wrap");
+const pages = [document.getElementById("page-calendar"), document.getElementById("page-charts")];
+
+function setTab(idx, animate) {
+  currentTab = idx;
+  pages.forEach((p,i)=>{ p.style.transform=`translateX(${(i-idx)*100}%)`; });
+  document.getElementById("tab-calendar").classList.toggle("active", idx===0);
+  document.getElementById("tab-charts").classList.toggle("active", idx===1);
+  if(idx===1) renderCharts();
+}
+
+// init positions without animation
+pages.forEach((p,i)=>{ p.style.transition="none"; p.style.transform=`translateX(${i*100}%)`; });
+requestAnimationFrame(()=>{ pages.forEach(p=>p.style.transition="transform 0.3s cubic-bezier(0.4,0,0.2,1)"); });
+
+// Override tab button clicks
+document.getElementById("tab-calendar").onclick=()=>setTab(0);
+document.getElementById("tab-charts").onclick=()=>setTab(1);
+
+wrap.addEventListener("touchstart",e=>{ swipeStartX=e.touches[0].clientX; swipeStartY=e.touches[0].clientY; },{passive:true});
+wrap.addEventListener("touchend",e=>{
+  const dx=e.changedTouches[0].clientX-swipeStartX;
+  const dy=e.changedTouches[0].clientY-swipeStartY;
+  if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>50) {
+    if(dx<0 && currentTab===0) setTab(1);
+    else if(dx>0 && currentTab===1) setTab(0);
+  }
+},{passive:true});
 
 load(); renderHeader(); renderStrip(); renderCal(); renderDay();
 document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
