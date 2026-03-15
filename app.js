@@ -361,6 +361,7 @@ function setTab(idx) {
 
   document.getElementById("tab-calendar").classList.toggle("active", idx===0);
   document.getElementById("tab-charts").classList.toggle("active", idx===1);
+  document.getElementById("fab").style.display = idx === 0 ? "flex" : "none";
   if(idx===1) renderCharts();
 }
 
