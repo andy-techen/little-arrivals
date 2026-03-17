@@ -601,24 +601,7 @@ function renderMachine() {
 
 // ── Swaddled baby SVG illustrations ──
 function storkSVG() {
-  return `<svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="32" cy="38" rx="12" ry="16" fill="#F8F4EE" stroke="#C8B8A8" stroke-width="1.5" stroke-linecap="round"/>
-    <path d="M22 36 Q14 30 16 22 Q20 28 26 30" fill="#EDE4D8" stroke="#C8B8A8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M32 22 Q30 16 32 10 Q34 4 36 8 Q34 12 34 18" fill="#F8F4EE" stroke="#C8B8A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <ellipse cx="34" cy="7" rx="5" ry="4.5" fill="#F8F4EE" stroke="#C8B8A8" stroke-width="1.4"/>
-    <circle cx="36" cy="6" r="1" fill="#8B7B6B"/>
-    <circle cx="36.4" cy="5.6" r="0.4" fill="white"/>
-    <path d="M38 7 L45 8.5 L38 9" fill="#F0A050" stroke="#D08030" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M32 10 Q35 12 35 18 Q33 16 31 18 Q31 12 32 10 Z" fill="#D8CEC4" opacity="0.5"/>
-    <path d="M28 53 L26 62" stroke="#F0A050" stroke-width="2" stroke-linecap="round"/>
-    <path d="M36 53 L38 62" stroke="#F0A050" stroke-width="2" stroke-linecap="round"/>
-    <path d="M26 62 L22 63 M26 62 L26 64 M26 62 L29 63" stroke="#F0A050" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M38 62 L34 63 M38 62 L38 64 M38 62 L41 63" stroke="#F0A050" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M20 28 Q10 20 12 10 Q14 4 18 6" fill="none" stroke="#F0C0D8" stroke-width="2" stroke-linecap="round" />
-    <ellipse cx="14" cy="14" rx="6" ry="5" fill="#FDE8F2" stroke="#D4789A" stroke-width="1.4"/>
-    <circle cx="13" cy="13" r="2.5" fill="#FFE8D8" stroke="#D4A090" stroke-width="1"/>
-    <path d="M12 14 Q13 15.5 14 14" stroke="#C08080" stroke-width="0.8" stroke-linecap="round" fill="none"/>
-  </svg>`;
+  return '<img src="./assets/stork.png" width="100" height="100" alt="stork" style="object-fit:contain;">';
 }
 
 function girlSVG(size) {
