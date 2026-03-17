@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Little Arrivals">
-<meta name="theme-color" content="#FDFBEE">
-<!-- PWA icon as inline SVG data URI -->
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23FEF8FB'/%3E%3Cellipse cx='90' cy='96' rx='42' ry='38' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M48 100 Q44 130 58 144 Q90 162 122 144 Q136 130 132 100 Q118 76 90 72 Q62 76 48 100 Z' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M55 106 Q90 94 125 106' fill='none' stroke='%23F0C0D8' stroke-width='3' stroke-linecap='round'/%3E%3Cellipse cx='90' cy='72' rx='36' ry='32' fill='%23FFF0E8' stroke='%23D4789A' stroke-width='3.5'/%3E%3Cellipse cx='74' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cellipse cx='106' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cpath d='M78 63 Q84 69 90 63 Q96 69 102 63' fill='none' stroke='%23C09090' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M82 82 Q90 88 98 82' fill='none' stroke='%23C8A0A0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M64 42 Q72 52 90 47 Q108 52 116 42 Q108 32 90 38 Q72 32 64 42 Z' fill='%23F9C8DF' stroke='%23D4789A' stroke-width='3'/%3E%3Ccircle cx='90' cy='42' r='7' fill='%23F0A8C4' stroke='%23D4789A' stroke-width='2.5'/%3E%3C%2Fsvg%3E">
-<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Little%20Arrivals%22%2C%22short_name%22%3A%22Arrivals%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FDFBEE%22%2C%22theme_color%22%3A%22%23FDFBEE%22%7D">
-<title>Little Arrivals</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Jua&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Little Arrivals">
+  <meta name="theme-color" content="#FDFBEE">
+  <!-- PWA icon as inline SVG data URI -->
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23FEF8FB'/%3E%3Cellipse cx='90' cy='96' rx='42' ry='38' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M48 100 Q44 130 58 144 Q90 162 122 144 Q136 130 132 100 Q118 76 90 72 Q62 76 48 100 Z' fill='%23FDE8F2' stroke='%23D4789A' stroke-width='4'/%3E%3Cpath d='M55 106 Q90 94 125 106' fill='none' stroke='%23F0C0D8' stroke-width='3' stroke-linecap='round'/%3E%3Cellipse cx='90' cy='72' rx='36' ry='32' fill='%23FFF0E8' stroke='%23D4789A' stroke-width='3.5'/%3E%3Cellipse cx='74' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cellipse cx='106' cy='78' rx='9' ry='6' fill='%23F5B8CF' opacity='0.55'/%3E%3Cpath d='M78 63 Q84 69 90 63 Q96 69 102 63' fill='none' stroke='%23C09090' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M82 82 Q90 88 98 82' fill='none' stroke='%23C8A0A0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M64 42 Q72 52 90 47 Q108 52 116 42 Q108 32 90 38 Q72 32 64 42 Z' fill='%23F9C8DF' stroke='%23D4789A' stroke-width='3'/%3E%3Ccircle cx='90' cy='42' r='7' fill='%23F0A8C4' stroke='%23D4789A' stroke-width='2.5'/%3E%3C%2Fsvg%3E">
+  <link rel="manifest" href="data:application/json,%7B%22name%22%3A%22Little%20Arrivals%22%2C%22short_name%22%3A%22Arrivals%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FDFBEE%22%2C%22theme_color%22%3A%22%23FDFBEE%22%7D">
+  <title>Little Arrivals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
@@ -27,116 +27,127 @@
 
   <div class="tab-bar">
     <button class="tab-btn active" id="tab-calendar" onclick="switchTab('calendar')">Calendar</button>
-    <button class="tab-btn" id="tab-charts" onclick="switchTab('charts')">Charts</button>
+    <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">Stats</button>
+    <button class="tab-btn" id="tab-babies" onclick="switchTab('babies')">Babies</button>
   </div>
 
   <div class="pages-wrap" id="pages-wrap">
-  <!-- Calendar Page -->
-  <div class="page active" id="page-calendar">
-    <div class="month-strip">
-      <div class="strip-stat">
-        <div class="strip-num p" id="strip-girls">0</div>
-        <div class="strip-label">Girls</div>
-      </div>
-      <div class="strip-div"></div>
-      <div class="strip-stat">
-        <div class="strip-num b" id="strip-boys">0</div>
-        <div class="strip-label">Boys</div>
-      </div>
-      <div class="strip-div"></div>
-      <div class="strip-stat">
-        <div class="strip-num g" id="strip-total">0</div>
-        <div class="strip-label">This Month</div>
-      </div>
-    </div>
-
-    <div class="cal-card">
-      <div class="cal-nav">
-        <button class="cal-arrow" id="prev-m">&#8249;</button>
-        <div class="cal-month-wrap">
-          <div class="cal-year" id="cal-year"></div>
-          <div class="cal-month-name" id="cal-month-name"></div>
+    <!-- Calendar Page -->
+    <div class="page active" id="page-calendar">
+      <div class="month-strip">
+        <div class="strip-stat">
+          <div class="strip-num p" id="strip-girls">0</div>
+          <div class="strip-label">Girls</div>
         </div>
-        <button class="cal-arrow" id="next-m">&#8250;</button>
+        <div class="strip-div"></div>
+        <div class="strip-stat">
+          <div class="strip-num b" id="strip-boys">0</div>
+          <div class="strip-label">Boys</div>
+        </div>
+        <div class="strip-div"></div>
+        <div class="strip-stat">
+          <div class="strip-num g" id="strip-total">0</div>
+          <div class="strip-label">This Month</div>
+        </div>
       </div>
-      <div class="cal-weekdays">
-        <div class="cal-wday">S</div><div class="cal-wday">M</div>
-        <div class="cal-wday">T</div><div class="cal-wday">W</div>
-        <div class="cal-wday">T</div><div class="cal-wday">F</div>
-        <div class="cal-wday">S</div>
+
+      <div class="cal-card">
+        <div class="cal-nav">
+          <button class="cal-arrow" id="prev-m">&#8249;</button>
+          <div class="cal-month-wrap">
+            <div class="cal-year" id="cal-year"></div>
+            <div class="cal-month-name" id="cal-month-name"></div>
+          </div>
+          <button class="cal-arrow" id="next-m">&#8250;</button>
+        </div>
+        <div class="cal-weekdays">
+          <div class="cal-wday">S</div><div class="cal-wday">M</div>
+          <div class="cal-wday">T</div><div class="cal-wday">W</div>
+          <div class="cal-wday">T</div><div class="cal-wday">F</div>
+          <div class="cal-wday">S</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
       </div>
-      <div class="cal-grid" id="cal-grid"></div>
+
+      <div class="day-header">
+        <div class="day-title" id="day-label"></div>
+        <div class="pill-row">
+          <div class="pill g"><div class="pill-dot"></div><span id="day-girls">0</span></div>
+          <div class="pill b"><div class="pill-dot"></div><span id="day-boys">0</span></div>
+        </div>
+      </div>
+      <div class="babies-list" id="babies-list"></div>
     </div>
 
-    <div class="day-header">
-      <div class="day-title" id="day-label"></div>
-      <div class="pill-row">
-        <div class="pill g"><div class="pill-dot"></div><span id="day-girls">0</span></div>
-        <div class="pill b"><div class="pill-dot"></div><span id="day-boys">0</span></div>
-      </div>
-    </div>
-    <div class="babies-list" id="babies-list"></div>
-  </div>
+    <!-- Stats Page -->
+    <div class="page" id="page-stats">
+      <div style="padding-top:4px">
+        <div class="stat-grid" id="stat-grid"></div>
 
-  <!-- Charts Page -->
-  <div class="page" id="page-charts">
-    <div style="padding-top:4px">
-      <div class="stat-grid" id="stat-grid"></div>
+        <div class="chart-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div class="chart-card-title" style="margin-bottom:0" id="daily-chart-title">Daily Deliveries</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="cal-arrow" id="chart-prev-m" style="width:28px;height:28px;font-size:14px">&#8249;</button>
+              <div style="font-family:var(--fd);font-size:15px;color:var(--ink);min-width:80px;text-align:center" id="chart-month-label"></div>
+              <button class="cal-arrow" id="chart-next-m" style="width:28px;height:28px;font-size:14px">&#8250;</button>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="chart-daily" style="display:block;width:100%;height:180px"></canvas></div>
+        </div>
 
-      <div class="chart-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div class="chart-card-title" style="margin-bottom:0" id="daily-chart-title">Daily Deliveries</div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <button class="cal-arrow" id="chart-prev-m" style="width:28px;height:28px;font-size:14px">&#8249;</button>
-            <div style="font-family:var(--fd);font-size:15px;color:var(--ink);min-width:80px;text-align:center" id="chart-month-label"></div>
-            <button class="cal-arrow" id="chart-next-m" style="width:28px;height:28px;font-size:14px">&#8250;</button>
+        <div class="chart-card">
+          <div class="chart-card-title">Gender Split</div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <div style="width:130px;height:130px;flex-shrink:0;position:relative"><canvas id="chart-donut" width="130" height="130" style="display:block"></canvas></div>
+            <div id="donut-legend" style="flex:1"></div>
           </div>
         </div>
-        <div class="chart-wrap"><canvas id="chart-daily" style="display:block;width:100%;height:180px"></canvas></div>
-      </div>
 
-      <div class="chart-card">
-        <div class="chart-card-title">Gender Split</div>
-        <div style="display:flex;align-items:center;gap:20px">
-          <div style="width:130px;height:130px;flex-shrink:0;position:relative"><canvas id="chart-donut" width="130" height="130" style="display:block"></canvas></div>
-          <div id="donut-legend" style="flex:1"></div>
+        <div class="chart-card">
+          <div class="chart-card-title">By Day of Week</div>
+          <div id="busy-days"></div>
         </div>
       </div>
+    </div>
 
-      <div class="chart-card">
-        <div class="chart-card-title">By Day of Week</div>
-        <div id="busy-days"></div>
+    <!-- Babies Page -->
+    <div class="page" id="page-babies">
+      <div style="padding-top:8px">
+        <div class="machine-wrap" id="machine-wrap"></div>
+        <div class="ball-card" id="ball-card" style="display:none"></div>
       </div>
     </div>
   </div>
-</div>
 
-<button class="fab" id="fab">
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11 3 L11 19" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-    <path d="M3 11 L19 11" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
-  </svg>
-</button>
-<div class="overlay" id="overlay"></div>
+  <button class="fab" id="fab">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M11 3 L11 19" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+      <path d="M3 11 L19 11" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <div class="overlay" id="overlay"></div>
 
-<div class="sheet" id="sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-title">New Arrival</div>
-  <div class="gender-row">
-    <button class="gnd-btn girl" id="btn-girl" onclick="selGender('girl')">
-      <div class="gnd-face" id="gnd-face-girl"></div>
-      <div class="gnd-label">Girl</div>
-    </button>
-    <button class="gnd-btn boy" id="btn-boy" onclick="selGender('boy')">
-      <div class="gnd-face" id="gnd-face-boy"></div>
-      <div class="gnd-label">Boy</div>
-    </button>
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title">New Arrival</div>
+    <div class="gender-row">
+      <button class="gnd-btn girl" id="btn-girl" onclick="selGender('girl')">
+        <div class="gnd-face" id="gnd-face-girl"></div>
+        <div class="gnd-label">Girl</div>
+      </button>
+      <button class="gnd-btn boy" id="btn-boy" onclick="selGender('boy')">
+        <div class="gnd-face" id="gnd-face-boy"></div>
+        <div class="gnd-label">Boy</div>
+      </button>
+    </div>
+    <label class="notes-lbl">Name</label>
+    <input class="name-input" id="name-input" type="text" placeholder="Baby's name..." autocomplete="off">
+    <label class="notes-lbl">Notes</label>
+    <textarea class="notes-ta" id="notes-ta" placeholder="Any notes about this delivery..."></textarea>
+    <button class="save-btn" id="save-btn">Record Arrival</button>
   </div>
-  <label class="notes-lbl">Notes (optional)</label>
-  <textarea class="notes-ta" id="notes-ta" placeholder="Any notes about this delivery..."></textarea>
-  <button class="save-btn" id="save-btn">Record Arrival</button>
-</div>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
