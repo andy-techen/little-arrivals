@@ -783,3 +783,17 @@ document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
   if(!link) { link = document.createElement("link"); link.rel = "apple-touch-icon"; document.head.appendChild(link); }
   link.href = url;
 })();
+
+// ── Service worker with auto-refresh ──
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js").then(function(reg) {
+    reg.addEventListener("updatefound", function() {
+      var newWorker = reg.installing;
+      newWorker.addEventListener("statechange", function() {
+        if (newWorker.state === "activated") {
+          window.location.reload();
+        }
+      });
+    });
+  });
+}
