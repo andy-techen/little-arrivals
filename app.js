@@ -669,17 +669,19 @@ document.getElementById("save-btn").addEventListener("click",saveArrival);
     const dy = currentY - startY;
     if(dy > 0) {
       sheet.style.transform = "translateX(-50%) translateY(" + dy + "px)";
+      if(dy > 80) {
+        dragging = false;
+        sheet.style.transition = "";
+        closeSheet();
+      }
     }
   }, {passive:true});
 
   sheet.addEventListener("touchend", function() {
     if(!dragging) return;
     dragging = false;
-    const dy = currentY - startY;
     sheet.style.transition = "";
-    if(dy > 80) {
-      closeSheet();
-    } else if(sheet.classList.contains("open")) {
+    if(sheet.classList.contains("open")) {
       sheet.style.transform = "translateX(-50%) translateY(0)";
     }
   }, {passive:true});
