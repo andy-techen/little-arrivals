@@ -647,6 +647,44 @@ function boySVG(size) {
 document.getElementById("fab").addEventListener("click",openSheet);
 document.getElementById("overlay").addEventListener("click",closeSheet);
 document.getElementById("save-btn").addEventListener("click",saveArrival);
+
+// ── Swipe-to-close on sheet ──
+(function() {
+  const sheet = document.getElementById("sheet");
+  let startY = 0, currentY = 0, dragging = false;
+
+  sheet.addEventListener("touchstart", function(e) {
+    const rect = sheet.getBoundingClientRect();
+    const touchY = e.touches[0].clientY - rect.top;
+    if(touchY > 50) return;
+    startY = e.touches[0].clientY;
+    currentY = startY;
+    dragging = true;
+    sheet.style.transition = "none";
+  }, {passive:true});
+
+  sheet.addEventListener("touchmove", function(e) {
+    if(!dragging) return;
+    currentY = e.touches[0].clientY;
+    const dy = currentY - startY;
+    if(dy > 0) {
+      sheet.style.transform = "translateX(-50%) translateY(" + dy + "px)";
+    }
+  }, {passive:true});
+
+  sheet.addEventListener("touchend", function() {
+    if(!dragging) return;
+    dragging = false;
+    const dy = currentY - startY;
+    sheet.style.transition = "";
+    if(dy > 80) {
+      closeSheet();
+    } else if(sheet.classList.contains("open")) {
+      sheet.style.transform = "translateX(-50%) translateY(0)";
+    }
+  }, {passive:true});
+})();
+
 document.getElementById("prev-m").addEventListener("click",()=>{ vM--; if(vM<0){vM=11;vY--;} renderCal();renderStrip(); });
 document.getElementById("next-m").addEventListener("click",()=>{ vM++; if(vM>11){vM=0;vY++;} renderCal();renderStrip(); });
 document.getElementById("chart-prev-m").addEventListener("click",()=>{ chartVM--; if(chartVM<0){chartVM=11;chartVY--;} renderDailyChart(); });
