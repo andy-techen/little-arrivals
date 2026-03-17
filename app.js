@@ -114,12 +114,32 @@ function renderDay() {
   }).join("");
 }
 
-function delBaby(key,idx) {
-  if(!data[key]) return;
-  data[key].splice(idx,1);
-  if(!data[key].length) delete data[key];
-  save(); renderCal(); renderStrip(); renderDay();
+let delPendingKey = null, delPendingIdx = null;
+
+function delBaby(key, idx) {
+  delPendingKey = key;
+  delPendingIdx = idx;
+  document.getElementById("del-overlay").classList.add("open");
+  document.getElementById("del-modal").classList.add("open");
 }
+
+function closeDelModal() {
+  document.getElementById("del-overlay").classList.remove("open");
+  document.getElementById("del-modal").classList.remove("open");
+  delPendingKey = null;
+  delPendingIdx = null;
+}
+
+document.getElementById("del-cancel").addEventListener("click", closeDelModal);
+document.getElementById("del-overlay").addEventListener("click", closeDelModal);
+document.getElementById("del-confirm").addEventListener("click", function() {
+  if(delPendingKey && data[delPendingKey]) {
+    data[delPendingKey].splice(delPendingIdx, 1);
+    if(!data[delPendingKey].length) delete data[delPendingKey];
+    save(); renderCal(); renderStrip(); renderDay();
+  }
+  closeDelModal();
+});
 
 function selGender(g) {
   sg = g;
