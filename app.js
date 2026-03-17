@@ -651,38 +651,31 @@ document.getElementById("save-btn").addEventListener("click",saveArrival);
 // ── Swipe-to-close on sheet ──
 (function() {
   const sheet = document.getElementById("sheet");
-  let startY = 0, currentY = 0, dragging = false;
+  let startY = 0, dragging = false;
 
   sheet.addEventListener("touchstart", function(e) {
-    const rect = sheet.getBoundingClientRect();
-    const touchY = e.touches[0].clientY - rect.top;
-    if(touchY > 50) return;
+    if(e.target.closest("input, textarea, button, .gnd-btn")) return;
     startY = e.touches[0].clientY;
-    currentY = startY;
     dragging = true;
     sheet.style.transition = "none";
   }, {passive:true});
 
   sheet.addEventListener("touchmove", function(e) {
     if(!dragging) return;
-    currentY = e.touches[0].clientY;
-    const dy = currentY - startY;
+    var dy = e.touches[0].clientY - startY;
     if(dy > 0) {
       sheet.style.transform = "translateX(-50%) translateY(" + dy + "px)";
-      if(dy > 80) {
-        dragging = false;
-        sheet.style.transition = "";
-        closeSheet();
-      }
     }
   }, {passive:true});
 
-  sheet.addEventListener("touchend", function() {
+  sheet.addEventListener("touchend", function(e) {
     if(!dragging) return;
     dragging = false;
+    var dy = e.changedTouches[0].clientY - startY;
     sheet.style.transition = "";
-    if(sheet.classList.contains("open")) {
-      sheet.style.transform = "translateX(-50%) translateY(0)";
+    sheet.style.transform = "";
+    if(dy > 60) {
+      closeSheet();
     }
   }, {passive:true});
 })();
