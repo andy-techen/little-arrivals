@@ -748,14 +748,26 @@ function closeProfile() {
   document.getElementById("profile-page").classList.remove("open");
 }
 
-function exportData() {
+async function exportData() {
   const bundle = {data, profile};
   const json = JSON.stringify(bundle, null, 2);
-  const blob = new Blob([json], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
+  const fileName = `little-arrivals-${todayKey()}.json`;
+  const file = new File([json], fileName, {type:"application/json"});
+
+  if(navigator.canShare && navigator.canShare({files:[file]})) {
+    try {
+      await navigator.share({files:[file], title:"Little Arrivals Backup"});
+    } catch(e) {
+      if(e.name !== "AbortError") alert("Export failed. Please try again.");
+    }
+    return;
+  }
+
+  // Fallback for non-iOS / desktop
+  const url = URL.createObjectURL(file);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `little-arrivals-${todayKey()}.json`;
+  a.download = fileName;
   a.click();
   URL.revokeObjectURL(url);
 }
