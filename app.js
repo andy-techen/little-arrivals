@@ -892,49 +892,37 @@ load(); loadProfile(); renderHeader(); renderStrip(); renderCal(); renderDay();
 document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
 document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
 
-// Generate app icon dynamically as PNG and set as apple-touch-icon
+// Generate app icon using girlSVG and set as apple-touch-icon
 (function() {
+  const size = 180;
   const c = document.createElement("canvas");
-  c.width = 180; c.height = 180;
+  c.width = size; c.height = size;
   const ctx = c.getContext("2d");
-  // Background rounded rect
+
+  // Rounded rect background
   ctx.fillStyle = "#FEF8FB";
-  ctx.beginPath(); ctx.roundRect(0,0,180,180,40); ctx.fill();
-  // Swaddle body
-  ctx.fillStyle = "#FDE8F2"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 3.5;
-  ctx.beginPath();
-  ctx.moveTo(48,100); ctx.quadraticCurveTo(44,130,58,144);
-  ctx.quadraticCurveTo(90,162,122,144); ctx.quadraticCurveTo(136,130,132,100);
-  ctx.quadraticCurveTo(118,76,90,72); ctx.quadraticCurveTo(62,76,48,100);
+  ctx.beginPath(); ctx.roundRect(0,0,size,size,40); ctx.fill();
+
+  // Pink circle background (matches note popover avatar style)
+  ctx.fillStyle = "#FEF0F6";
+  ctx.strokeStyle = "#D4789A";
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(size/2, size/2, 82, 0, Math.PI*2);
   ctx.fill(); ctx.stroke();
-  // Head
-  ctx.fillStyle = "#FFF0E8"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.ellipse(90,72,36,32,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  // Cheeks
-  ctx.fillStyle = "rgba(245,184,207,0.55)";
-  ctx.beginPath(); ctx.ellipse(74,78,9,6,0,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(106,78,9,6,0,0,Math.PI*2); ctx.fill();
-  // Eyes
-  ctx.strokeStyle = "#C09090"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
-  ctx.beginPath(); ctx.moveTo(78,63); ctx.quadraticCurveTo(84,69,90,63); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(90,63); ctx.quadraticCurveTo(96,69,102,63); ctx.stroke();
-  // Smile
-  ctx.strokeStyle = "#C8A0A0"; ctx.lineWidth = 2.2;
-  ctx.beginPath(); ctx.moveTo(82,82); ctx.quadraticCurveTo(90,88,98,82); ctx.stroke();
-  // Bow
-  ctx.fillStyle = "#F9C8DF"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.moveTo(64,42); ctx.quadraticCurveTo(72,52,90,47);
-  ctx.quadraticCurveTo(108,52,116,42); ctx.quadraticCurveTo(108,32,90,38);
-  ctx.quadraticCurveTo(72,32,64,42);
-  ctx.fill(); ctx.stroke();
-  ctx.fillStyle = "#F0A8C4"; ctx.strokeStyle = "#D4789A"; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(90,42,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  // Set as apple-touch-icon
-  const url = c.toDataURL("image/png");
-  let link = document.querySelector("link[rel='apple-touch-icon']");
-  if(!link) { link = document.createElement("link"); link.rel = "apple-touch-icon"; document.head.appendChild(link); }
-  link.href = url;
+
+  // Draw girlSVG as image
+  const svgBlob = new Blob([girlSVG(160)], {type:"image/svg+xml"});
+  const svgUrl = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  img.onload = function() {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(size/2, size/2, 80, 0, Math.PI*2); ctx.clip();
+    ctx.drawImage(img, 10, 2, 160, 176);
+    ctx.restore();
+    URL.revokeObjectURL(svgUrl);
+    document.getElementById("apple-touch-icon").href = c.toDataURL("image/png");
+  };
+  img.src = svgUrl;
 })();
 
 // ── Service worker with auto-refresh ──

@@ -130,6 +130,7 @@ body::before {
   padding:14px 16px; text-align:left; color:var(--ink-light);
 }
 .profile-row:active { background:rgba(80,60,40,0.04); }
+.profile-row > svg path { stroke: var(--ink-light); }
 .profile-row-icon {
   width:34px; height:34px; border-radius:10px;
   background:var(--bg); border:1.5px solid var(--line);
