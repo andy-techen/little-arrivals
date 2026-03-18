@@ -681,6 +681,117 @@ function closeNotePopover() {
 
 document.getElementById("note-overlay").addEventListener("click", closeNotePopover);
 
+let profile = {};
+
+const AVATAR_SEEDS = [
+  "Lily","Amelia","Sofia","Mia","Ava",
+  "Luna","Penelope","Chloe","Grace","Nora",
+  "Ella","Audrey","Natalie","Iris","Flora",
+  "Rose","Ivy","Daisy","Simone","Willow",
+  "Aria","Bella","Clara","Elena","Celeste",
+  "Vivienne","Isabella","Olivia","Sara","Laura"
+];
+
+function avatarUrl(seed) {
+  return `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(seed)}&backgroundColor=fde8f2`;
+}
+
+function loadProfile() {
+  try { profile = JSON.parse(localStorage.getItem("la-profile")||"{}"); } catch(e) { profile={}; }
+}
+
+function saveProfile() {
+  localStorage.setItem("la-profile", JSON.stringify(profile));
+}
+
+function renderProfileAvatar() {
+  const avatar = document.getElementById("profile-avatar");
+  if(!avatar) return;
+  if(profile.avatarSeed) {
+    avatar.innerHTML = `<img src="${avatarUrl(profile.avatarSeed)}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    avatar.innerHTML = `<svg width="40" height="40" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6.5" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M2 16c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+  }
+}
+
+function renderAvatarPicker() {
+  const picker = document.getElementById("avatar-picker");
+  if(!picker) return;
+  picker.innerHTML = AVATAR_SEEDS.map(seed=>`
+    <button class="avatar-option${profile.avatarSeed===seed?" sel":""}" onclick="selectAvatar('${seed}')">
+      <img src="${avatarUrl(seed)}" loading="lazy" alt="${seed}">
+    </button>
+  `).join("");
+}
+
+function selectAvatar(seed) {
+  profile.avatarSeed = seed;
+  saveProfile();
+  renderProfileAvatar();
+  document.getElementById("avatar-picker").style.display = "none";
+}
+
+function toggleAvatarPicker() {
+  const picker = document.getElementById("avatar-picker");
+  const open = picker.style.display === "none";
+  picker.style.display = open ? "grid" : "none";
+  if(open) renderAvatarPicker();
+}
+
+function openProfile() {
+  renderProfileAvatar();
+  document.getElementById("avatar-picker").style.display = "none";
+  document.getElementById("profile-page").classList.add("open");
+}
+
+function closeProfile() {
+  document.getElementById("profile-page").classList.remove("open");
+}
+
+function exportData() {
+  const bundle = {data, profile};
+  const json = JSON.stringify(bundle, null, 2);
+  const blob = new Blob([json], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `little-arrivals-${todayKey()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if(typeof imported !== "object" || Array.isArray(imported)) throw new Error();
+      // Support both new bundle format {data, profile} and legacy plain data
+      if(imported.data && typeof imported.data === "object") {
+        data = imported.data;
+        if(imported.profile && typeof imported.profile === "object") {
+          profile = imported.profile;
+          localStorage.setItem("la-profile", JSON.stringify(profile));
+          renderProfileAvatar();
+        }
+      } else {
+        data = imported;
+      }
+      save();
+      renderCal(); renderStrip(); renderDay();
+      if(currentTab === 1) renderCharts();
+      if(currentTab === 2) renderMachine();
+      closeProfile();
+    } catch(err) {
+      alert("Invalid backup file. Please select a valid Little Arrivals export.");
+    }
+    input.value = "";
+  };
+  reader.readAsText(file);
+}
+
 document.getElementById("fab").addEventListener("click",openSheet);
 document.getElementById("overlay").addEventListener("click",closeSheet);
 document.getElementById("save-btn").addEventListener("click",saveArrival);
@@ -765,7 +876,7 @@ document.getElementById("app").addEventListener("touchend",e=>{
   }
 },{passive:true});
 
-load(); renderHeader(); renderStrip(); renderCal(); renderDay();
+load(); loadProfile(); renderHeader(); renderStrip(); renderCal(); renderDay();
 document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
 document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
 
