@@ -119,7 +119,7 @@ body::before {
 .profile-start-input {
   background:none; border:none; border-bottom:1.5px solid var(--line);
   font-family:var(--fu); font-size:13px; color:var(--ink-mid);
-  outline:none; padding:2px 4px; text-align:center; width:100px;
+  outline:none; padding:2px 4px; text-align:center;
 }
 .avatar-picker {
   margin-top:14px;
