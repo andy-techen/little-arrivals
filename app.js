@@ -738,19 +738,31 @@ function toggleAvatarPicker() {
   if(open) renderAvatarPicker();
 }
 
+function saveStartDate() {
+  profile.startDate = document.getElementById("profile-start-input").value;
+  saveProfile();
+  renderTenure();
+}
+
 function renderTenure() {
   const el = document.getElementById("profile-tenure");
   if(!el) return;
-  const keys = Object.keys(data).sort();
-  if(!keys.length) { el.textContent = ""; return; }
-  const first = new Date(keys[0] + "T12:00:00");
-  const now = new Date();
+  if(!profile.startDate) { el.textContent = ""; return; }
+  const [fy, fm, fd] = profile.startDate.split("-").map(Number);
+  const first = new Date(fy, fm - 1, fd);
+  const now = new Date(); now.setHours(0, 0, 0, 0);
   const days = Math.floor((now - first) / (1000*60*60*24));
   el.textContent = `Catching babies for ${days} days`;
 }
 
 function openProfile() {
   renderProfileAvatar();
+  // Pre-fill with first entry date on first open, then lock to profile.startDate
+  if(!profile.startDate) {
+    const first = Object.keys(data).sort()[0];
+    if(first) { profile.startDate = first; saveProfile(); }
+  }
+  document.getElementById("profile-start-input").value = profile.startDate || "";
   renderTenure();
   document.getElementById("avatar-picker").style.display = "none";
   document.getElementById("profile-page").classList.add("open");

@@ -105,8 +105,21 @@ body::before {
 }
 .profile-avatar:active { opacity:0.8; }
 .profile-tenure {
-  text-align:center; margin-top:10px; margin-bottom:4px;
-  font-size:13px; color:var(--ink-light); font-weight:500;
+  text-align:center; margin-top:10px; margin-bottom:6px;
+  font-size:15px; color:var(--ink-light); font-weight:500;
+}
+.profile-start-wrap {
+  display:flex; align-items:center; justify-content:center;
+  gap:6px; margin-bottom:24px;
+}
+.profile-start-label {
+  font-size:12px; font-weight:600; color:var(--ink-light);
+  text-transform:uppercase; letter-spacing:0.6px;
+}
+.profile-start-input {
+  background:none; border:none; border-bottom:1.5px solid var(--line);
+  font-family:var(--fu); font-size:13px; color:var(--ink-mid);
+  outline:none; padding:2px 4px; text-align:center; width:100px;
 }
 .avatar-picker {
   margin-top:14px;
@@ -392,7 +405,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   align-items:center; margin-bottom:20px; cursor:pointer;
   -webkit-tap-highlight-color:transparent; user-select:none;
 }
-#machine-canvas { display:block; touch-action:none; }
+#machine-canvas { display:block; touch-action:pan-y; }
 .machine-count {
   font-family:var(--fd); font-size:18px; color:var(--ink-mid);
   margin-top:6px;
