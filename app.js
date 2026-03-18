@@ -99,7 +99,7 @@ function renderDay() {
   }
   list.innerHTML = bs.map((b,i)=>{
     const ig = b.gender==="girl";
-    return `<div class="baby-card">
+    return `<div class="baby-card" onclick="if(!event.target.closest('button'))showNotePopover('${key}',${i})" style="cursor:pointer">
       <div class="baby-blob ${b.gender}">${ig?girlSVG():boySVG()}</div>
       <div class="baby-info">
         <div class="baby-gender">${b.name || (ig?"Baby Girl":"Baby Boy")}</div>
@@ -646,6 +646,40 @@ function boySVG(size) {
     <path d="M64 62 Q73 58 71 50 Q67 45 63 52" fill="#FFF0E8" stroke="#5A9DC8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`;
 }
+
+function showNotePopover(key, idx) {
+  const b = (data[key]||[])[idx];
+  if(!b) return;
+  const ig = b.gender === "girl";
+  const name = b.name || (ig ? "Baby Girl" : "Baby Boy");
+  const [y,m,d] = key.split("-").map(Number);
+  const dt = new Date(y,m-1,d);
+  const dateStr = `${DAYS[dt.getDay()]}, ${MS[m-1]} ${d}`;
+  const sub = [dateStr, b.time].filter(Boolean).join(" · ");
+
+  document.getElementById("note-popover-avatar").innerHTML =
+    `<div style="width:60px;height:60px;border-radius:50%;background:${ig?"#FEF0F6":"#EDF7FD"};border:2px solid ${ig?"#D4789A":"#5A9DC8"};display:flex;align-items:center;justify-content:center;">${ig?girlSVG(44):boySVG(44)}</div>`;
+  document.getElementById("note-popover-name").textContent = name;
+  document.getElementById("note-popover-sub").textContent = sub;
+
+  const body = document.getElementById("note-popover-body");
+  if(b.note) {
+    body.textContent = b.note;
+    body.style.display = "";
+  } else {
+    body.style.display = "none";
+  }
+
+  document.getElementById("note-overlay").classList.add("open");
+  document.getElementById("note-popover").classList.add("open");
+}
+
+function closeNotePopover() {
+  document.getElementById("note-overlay").classList.remove("open");
+  document.getElementById("note-popover").classList.remove("open");
+}
+
+document.getElementById("note-overlay").addEventListener("click", closeNotePopover);
 
 document.getElementById("fab").addEventListener("click",openSheet);
 document.getElementById("overlay").addEventListener("click",closeSheet);
