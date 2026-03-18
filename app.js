@@ -903,12 +903,10 @@ document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
   ctx.fillStyle = "#FEF8FB";
   ctx.beginPath(); ctx.roundRect(0,0,size,size,40); ctx.fill();
 
-  // Pink circle background (matches note popover avatar style)
+  // Pink circle background
   ctx.fillStyle = "#FEF0F6";
-  ctx.strokeStyle = "#D4789A";
-  ctx.lineWidth = 4;
   ctx.beginPath(); ctx.arc(size/2, size/2, 82, 0, Math.PI*2);
-  ctx.fill(); ctx.stroke();
+  ctx.fill();
 
   // Draw girlSVG as image
   const svgBlob = new Blob([girlSVG(160)], {type:"image/svg+xml"});

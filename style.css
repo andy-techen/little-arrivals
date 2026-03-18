@@ -71,13 +71,15 @@ body::before {
   z-index:250; background:var(--bg);
   transform:translateX(100%);
   transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
-  display:flex; flex-direction:column;
-  padding:0 16px calc(40px + env(safe-area-inset-bottom));
-  padding-top:max(14px, env(safe-area-inset-top));
-  overflow-y:auto; -webkit-overflow-scrolling:touch;
-  overscroll-behavior:none;
+  overflow:hidden;
 }
 .profile-page.open { transform:translateX(0); }
+.profile-scroll {
+  height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overscroll-behavior:none;
+  padding:0 16px calc(40px + env(safe-area-inset-bottom));
+  padding-top:max(14px, env(safe-area-inset-top));
+}
 
 .profile-page-header {
   display:flex; align-items:center; gap:8px;
