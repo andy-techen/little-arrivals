@@ -104,6 +104,10 @@ body::before {
   overflow:hidden; cursor:pointer;
 }
 .profile-avatar:active { opacity:0.8; }
+.profile-tenure {
+  text-align:center; margin-top:10px; margin-bottom:4px;
+  font-size:13px; color:var(--ink-light); font-weight:500;
+}
 .avatar-picker {
   margin-top:14px;
   display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:24px;

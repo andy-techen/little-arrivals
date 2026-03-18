@@ -738,8 +738,20 @@ function toggleAvatarPicker() {
   if(open) renderAvatarPicker();
 }
 
+function renderTenure() {
+  const el = document.getElementById("profile-tenure");
+  if(!el) return;
+  const keys = Object.keys(data).sort();
+  if(!keys.length) { el.textContent = ""; return; }
+  const first = new Date(keys[0] + "T12:00:00");
+  const now = new Date();
+  const days = Math.floor((now - first) / (1000*60*60*24));
+  el.textContent = `Catching babies for ${days} days`;
+}
+
 function openProfile() {
   renderProfileAvatar();
+  renderTenure();
   document.getElementById("avatar-picker").style.display = "none";
   document.getElementById("profile-page").classList.add("open");
 }
@@ -903,20 +915,12 @@ document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
   ctx.fillStyle = "#FEF8FB";
   ctx.beginPath(); ctx.roundRect(0,0,size,size,40); ctx.fill();
 
-  // Pink circle background
-  ctx.fillStyle = "#FEF0F6";
-  ctx.beginPath(); ctx.arc(size/2, size/2, 82, 0, Math.PI*2);
-  ctx.fill();
-
   // Draw girlSVG as image
   const svgBlob = new Blob([girlSVG(160)], {type:"image/svg+xml"});
   const svgUrl = URL.createObjectURL(svgBlob);
   const img = new Image();
   img.onload = function() {
-    ctx.save();
-    ctx.beginPath(); ctx.arc(size/2, size/2, 80, 0, Math.PI*2); ctx.clip();
     ctx.drawImage(img, 10, 2, 160, 176);
-    ctx.restore();
     URL.revokeObjectURL(svgUrl);
     document.getElementById("apple-touch-icon").href = c.toDataURL("image/png");
   };
