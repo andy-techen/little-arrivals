@@ -169,7 +169,9 @@ function saveArrival() {
     data[selDate].push({gender:sg,note,name,time});
   }
   editingKey = null; editingIdx = null;
-  save(); closeSheet(); renderCal(); renderStrip(); renderDay();
+  save();
+  if(!shifts[selDate]) { shifts[selDate] = { note: "" }; saveShifts(); }
+  closeSheet(); renderCal(); renderStrip(); renderDay();
 }
 
 function delBaby(key, idx) {
