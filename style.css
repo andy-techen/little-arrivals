@@ -215,7 +215,8 @@ body::before {
 }
 
 .cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.cal-month-wrap { text-align:center; }
+.cal-month-wrap { text-align:center; cursor:pointer; }
+.cal-month-wrap:active { opacity:0.7; }
 .cal-year { font-size:11px; font-weight:600; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
 
 .cal-month-name {
@@ -500,3 +501,39 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 .del-modal-btn:active { transform:scale(0.95); }
 .del-modal-btn.cancel { background:var(--line); color:var(--ink-mid); }
 .del-modal-btn.confirm { background:#E24B4A; color:white; }
+
+/* Shift day calendar highlight */
+.cal-day.shift-day:not(.today):not(.selected) { background:color-mix(in srgb, var(--blue) 30%, transparent); }
+.cal-day.shift-day.has-data:not(.today):not(.selected) { background:color-mix(in srgb, var(--blue) 30%, transparent); }
+
+/* Shift row (between day header and babies list) */
+.shift-row { margin-bottom:12px; }
+.shift-row-btns { display:flex; align-items:center; gap:6px; }
+
+.shift-toggle {
+  background:none; border:1.5px solid var(--line); border-radius:20px;
+  padding:5px 14px; font-family:var(--fu); font-size:13px; font-weight:600;
+  color:var(--ink-light); cursor:pointer; transition:all 0.15s;
+}
+.shift-toggle:active { transform:scale(0.95); }
+.shift-toggle.active { background:var(--blue-bg); border-color:var(--blue-mid); color:var(--blue-deep); }
+
+.shift-note-toggle {
+  background:none; border:1.5px solid var(--line); border-radius:20px;
+  padding:5px 12px; font-family:var(--fu); font-size:12px; font-weight:600;
+  color:var(--ink-light); cursor:pointer; transition:all 0.15s;
+}
+.shift-note-toggle:active { transform:scale(0.95); }
+.shift-note-toggle.has-note { color:var(--ink-mid); border-color:rgba(80,60,40,0.18); }
+.shift-note-toggle.open { background:var(--blue-bg); border-color:var(--blue-mid); color:var(--blue-deep); }
+
+.shift-note {
+  display:block; width:100%; margin-top:8px;
+  border:1.5px solid var(--line); border-radius:12px;
+  padding:10px 13px; font-family:var(--fu); font-size:14px; color:var(--ink);
+  background:#FFFFFF; resize:none; height:68px; outline:none;
+  user-select:text; -webkit-user-select:text;
+}
+.shift-note:focus { border-color:var(--blue-mid); }
+.shift-note::placeholder { color:var(--ink-light); }
+

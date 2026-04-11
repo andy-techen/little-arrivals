@@ -55,14 +55,19 @@
         <div class="strip-div"></div>
         <div class="strip-stat">
           <div class="strip-num g" id="strip-total">0</div>
-          <div class="strip-label">This Month</div>
+          <div class="strip-label">Deliveries</div>
+        </div>
+        <div class="strip-div"></div>
+        <div class="strip-stat">
+          <div class="strip-num b" id="strip-shifts">0</div>
+          <div class="strip-label">Shifts</div>
         </div>
       </div>
 
       <div class="cal-card">
         <div class="cal-nav">
           <button class="cal-arrow" id="prev-m">&#8249;</button>
-          <div class="cal-month-wrap">
+          <div class="cal-month-wrap" onclick="jumpToToday()" title="Back to today">
             <div class="cal-year" id="cal-year"></div>
             <div class="cal-month-name" id="cal-month-name"></div>
           </div>
@@ -84,6 +89,7 @@
           <div class="pill b"><div class="pill-dot"></div><span id="day-boys">0</span></div>
         </div>
       </div>
+      <div id="shift-row" class="shift-row"></div>
       <div class="babies-list" id="babies-list"></div>
     </div>
 
@@ -185,7 +191,7 @@
       <button class="profile-back" onclick="closeProfile()">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <div class="profile-page-title">Profile</div>
+      <div class="profile-page-title">Profile & Settings</div>
     </div>
     <div class="profile-avatar-wrap">
       <div class="profile-avatar" id="profile-avatar" onclick="toggleAvatarPicker()"></div>
@@ -221,10 +227,51 @@
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(this)">
+      <div class="profile-divider"></div>
+      <button class="profile-row" onclick="openICSModal()">
+        <div class="profile-row-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="4" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 2v3M12 2v3M3 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="profile-row-text">
+          <div class="profile-row-title">Import Schedule</div>
+          <div class="profile-row-sub">Load shift days from an .ics calendar file</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <input type="file" id="ics-input" accept=".ics" style="display:none" onchange="importICSFile(this)">
+      <div class="profile-divider"></div>
+      <button class="profile-row" onclick="clearFutureShifts()">
+        <div class="profile-row-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 5l8 8M13 5l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="profile-row-text">
+          <div class="profile-row-title">Clear Future Shifts</div>
+          <div class="profile-row-sub">Remove all shift markers after today</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
     </div>
   </div>
 </div>
 
-  <script src="app.js"></script>
+<!-- ICS import modal -->
+<div class="overlay" id="ics-overlay"></div>
+<div class="del-modal" id="ics-modal">
+  <div class="del-modal-title">Import Schedule</div>
+  <div class="del-modal-sub" style="margin-bottom:14px">Filter by event title keyword, or leave blank to import all events.</div>
+  <input type="text" id="ics-modal-keyword" class="name-input" placeholder="e.g. shift" autocomplete="off" style="margin-bottom:16px">
+  <div class="del-modal-btns">
+    <button class="del-modal-btn cancel" onclick="closeICSModal()">Cancel</button>
+    <button class="del-modal-btn confirm" style="background:var(--blue-mid)" onclick="triggerICSImport()">Choose File</button>
+  </div>
+</div>
+
+  <script src="store.js"></script>
+  <script src="illustrations.js"></script>
+  <script src="calendar.js"></script>
+  <script src="stats.js"></script>
+  <script src="machine.js"></script>
+  <script src="profile.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
