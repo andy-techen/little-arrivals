@@ -474,7 +474,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 }
 
 /* Delete confirmation modal */
-#del-overlay {
+#del-overlay, #ics-overlay {
   z-index:400;
 }
 .del-modal {
