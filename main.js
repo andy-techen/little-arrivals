@@ -78,13 +78,23 @@ document.getElementById("save-btn").addEventListener("click",saveArrival);
 })();
 
 // Swipe between tabs
-document.getElementById("app").addEventListener("touchstart",e=>{ swipeStartX=e.touches[0].clientX; swipeStartY=e.touches[0].clientY; },{passive:true});
+let swipeOnCal = false;
+document.getElementById("app").addEventListener("touchstart",e=>{
+  swipeStartX=e.touches[0].clientX;
+  swipeStartY=e.touches[0].clientY;
+  swipeOnCal = !!e.target.closest(".cal-card");
+},{passive:true});
 document.getElementById("app").addEventListener("touchend",e=>{
   const dx=e.changedTouches[0].clientX-swipeStartX;
   const dy=e.changedTouches[0].clientY-swipeStartY;
   if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>50) {
-    if(dx<0 && currentTab<2) setTab(currentTab+1);
-    else if(dx>0 && currentTab>0) setTab(currentTab-1);
+    if(currentTab === 0 && swipeOnCal) {
+      if(dx<0) { vM++; if(vM>11){vM=0;vY++;} renderCal(); renderStrip(); }
+      else      { vM--; if(vM<0){vM=11;vY--;} renderCal(); renderStrip(); }
+    } else {
+      if(dx<0 && currentTab<2) setTab(currentTab+1);
+      else if(dx>0 && currentTab>0) setTab(currentTab-1);
+    }
   }
 },{passive:true});
 
