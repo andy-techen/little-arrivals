@@ -248,7 +248,10 @@ function savePatient() {
     var existing = timerPatients.find(function(p) { return p.id === addPatientEditId; });
     if (existing) existing.label = label;
   } else {
-    timerPatients.push({ id: "pt_" + Date.now(), label: label, createdAt: Date.now(), timers: [] });
+    var now = Date.now();
+    timerPatients.push({ id: "pt_" + now, label: label, createdAt: now, timers: [
+      { id: "tmr_" + now, type: "temperature", customLabel: "", intervalMs: TIMER_PRESETS["temperature"], nextDueAt: now + TIMER_PRESETS["temperature"], history: [], pushNotificationId: null }
+    ] });
   }
   saveTimers();
   closePatientSheet();
