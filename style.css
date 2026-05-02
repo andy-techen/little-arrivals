@@ -537,3 +537,195 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 .shift-note:focus { border-color:var(--blue-mid); }
 .shift-note::placeholder { color:var(--ink-light); }
 
+/* ── Timer FAB ── */
+.timer-fab {
+  position:fixed; bottom:calc(18px + env(safe-area-inset-bottom)); right:88px;
+  width:56px; height:56px; border-radius:50%;
+  background:#FFFFFF; border:1.5px solid var(--pink-mid);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  z-index:100; box-shadow:0 4px 16px rgba(180,120,150,0.15); transition:transform 0.15s;
+}
+.timer-fab:active { transform:scale(0.9); }
+.timer-fab-badge {
+  position:absolute; top:-4px; right:-4px;
+  width:18px; height:18px; border-radius:50%;
+  background:#E24B4A; color:#fff;
+  font-size:10px; font-weight:700; font-family:var(--fu);
+  display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--bg); pointer-events:none;
+}
+
+/* ── Timer Page ── */
+.timer-page {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  height:100dvh; width:100%; max-width:430px; margin:0 auto;
+  z-index:210; background:var(--bg);
+  transform:translateX(100%);
+  transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  overflow:hidden;
+}
+.timer-page.open { transform:translateX(0); }
+.timer-scroll {
+  height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  overscroll-behavior:none;
+  padding:0 16px calc(40px + env(safe-area-inset-bottom));
+  padding-top:max(14px, env(safe-area-inset-top));
+}
+.timer-page-header {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:20px;
+}
+.timer-add-patient-btn {
+  margin-left:auto;
+  background:var(--pink-mid); border:none; border-radius:20px;
+  padding:7px 14px;
+  font-family:var(--fu); font-size:13px; font-weight:600; color:#fff;
+  cursor:pointer; display:flex; align-items:center; gap:5px;
+  transition:transform 0.1s;
+}
+.timer-add-patient-btn:active { transform:scale(0.95); }
+
+/* ── Patient card ── */
+.patient-card {
+  background:#fff; border-radius:18px; border:1.5px solid var(--line);
+  margin-bottom:14px; overflow:hidden;
+}
+.patient-card-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 14px 10px;
+}
+.patient-card-label {
+  font-family:var(--fd); font-size:18px; color:var(--ink);
+  display:flex; align-items:center; gap:7px; flex:1; min-width:0;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.patient-overdue-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:18px; height:18px; border-radius:9px;
+  background:#E24B4A; color:#fff;
+  font-family:var(--fu); font-size:10px; font-weight:700;
+  padding:0 4px; flex-shrink:0;
+}
+.patient-card-header { cursor:pointer; }
+.patient-card-header:active { background:rgba(80,60,40,0.03); }
+.patient-card-actions {
+  display:flex; align-items:center; gap:4px; flex-shrink:0;
+}
+.patient-chevron {
+  color:var(--ink-light); margin-left:2px; flex-shrink:0;
+  transform:rotate(-90deg); transition:transform 0.2s;
+}
+.patient-chevron.open { transform:rotate(0deg); }
+.patient-action-btn {
+  background:none; border:none; cursor:pointer;
+  color:var(--ink-light); padding:5px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:8px; transition:background 0.12s;
+}
+.patient-action-btn:active { background:rgba(80,60,40,0.07); }
+.patient-action-btn.delete:active { color:#E24B4A; }
+
+/* ── Timer row ── */
+.timer-row {
+  padding:10px 14px; border-top:1px solid var(--line);
+  transition:background 0.15s;
+}
+.timer-row.overdue { background:rgba(226,75,74,0.05); }
+.timer-row-left { display:flex; align-items:center; gap:9px; flex:1; min-width:0; }
+.timer-type-icon { font-size:18px; flex-shrink:0; line-height:1; }
+.timer-row-info { flex:1; min-width:0; }
+.timer-row-label { font-size:14px; font-weight:600; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.timer-row-sub { font-size:11px; color:var(--ink-light); margin-top:1px; }
+.timer-row-right { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+.timer-countdown {
+  font-size:12px; font-weight:600; color:var(--ink-light);
+  white-space:nowrap; text-align:right; min-width:60px;
+}
+.timer-countdown.overdue { color:#E24B4A; }
+.timer-done-btn {
+  padding:5px 12px; border-radius:20px; border:none;
+  background:var(--pink-mid); color:#fff;
+  font-family:var(--fu); font-size:12px; font-weight:700;
+  cursor:pointer; transition:background 0.15s, transform 0.1s;
+  white-space:nowrap;
+}
+.timer-done-btn:active { transform:scale(0.92); }
+.timer-done-btn.done-flash { background:var(--green-deep); }
+.timer-delete-btn {
+  background:none; border:none; cursor:pointer;
+  color:var(--ink-light); padding:4px;
+  display:flex; align-items:center; justify-content:center;
+}
+.timer-delete-btn:active { color:#E24B4A; }
+.timer-row-main { display:flex; align-items:center; justify-content:space-between; }
+.timer-row-footer {
+  padding:4px 0 0 calc(18px + 9px); /* indent aligns under label text */
+  display:flex; align-items:center;
+}
+.timer-history-toggle {
+  background:none; border:none; cursor:pointer;
+  font-family:var(--fu); font-size:11px; font-weight:600;
+  color:var(--ink-light); padding:2px 0;
+  transition:color 0.12s;
+}
+.timer-history-toggle:active, .timer-history-toggle.open { color:var(--pink-deep); }
+.timer-row-sub-none {
+  font-size:11px; color:var(--ink-light); opacity:0.5;
+}
+.timer-history-list {
+  padding:4px 0 4px calc(18px + 9px);
+  display:flex; flex-direction:column; gap:5px;
+}
+.timer-history-entry {
+  display:flex; align-items:center; gap:7px;
+}
+.timer-history-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--pink-mid); flex-shrink:0;
+}
+.timer-history-time {
+  font-size:12px; color:var(--ink-mid);
+}
+
+.add-timer-btn {
+  width:100%; border:none; background:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  padding:11px 14px; border-top:1px solid var(--line);
+  font-family:var(--fu); font-size:13px; font-weight:600;
+  color:var(--ink-light); transition:background 0.12s;
+}
+.add-timer-btn:active { background:rgba(80,60,40,0.04); }
+
+/* ── Timer empty state ── */
+.timer-empty {
+  text-align:center; padding:48px 20px 32px;
+  background:#fff; border-radius:18px; border:1.5px dashed rgba(80,60,40,0.12);
+}
+.timer-empty-icon { font-size:36px; margin-bottom:10px; }
+.timer-empty-title { font-family:var(--fd); font-size:18px; color:var(--ink-light); margin-bottom:4px; }
+.timer-empty-sub { font-size:13px; color:var(--ink-light); }
+
+/* ── Type + interval chips ── */
+.chips-label {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.7px; color:var(--ink-mid); margin-bottom:8px;
+}
+.chips-wrap {
+  display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px; justify-content:space-between;
+}
+.chips-wrap > * { flex:1 1 auto; text-align:center; }
+.type-chip, .interval-chip {
+  padding:7px 13px; border-radius:20px;
+  border:1.5px solid var(--line); background:#fff;
+  font-family:var(--fu); font-size:13px; font-weight:600; color:var(--ink-mid);
+  cursor:pointer; transition:all 0.13s; white-space:nowrap;
+}
+.type-chip:active, .interval-chip:active { transform:scale(0.95); }
+.type-chip.sel { background:var(--pink-bg); border-color:var(--pink-mid); color:var(--pink-deep); }
+.interval-chip.sel { background:var(--pink-bg); border-color:var(--pink-mid); color:var(--pink-deep); }
+
+/* ── Patient & timer sheets sit above the timer page ── */
+#patient-overlay, #timer-sheet-overlay { z-index:220; }
+#patient-sheet, #timer-sheet { z-index:221; }
+

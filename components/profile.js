@@ -89,7 +89,7 @@ function closeProfile() {
 }
 
 async function exportData() {
-  const bundle = {data, profile, shifts};
+  const bundle = {data, profile, shifts, timerPatients};
   const json = JSON.stringify(bundle, null, 2);
   const fileName = `little-arrivals-${todayKey()}.json`;
   const file = new File([json], fileName, {type:"application/json"});
@@ -129,6 +129,10 @@ function importData(input) {
         if(imported.shifts && typeof imported.shifts === "object") {
           shifts = imported.shifts;
           saveShifts();
+        }
+        if(Array.isArray(imported.timerPatients)) {
+          timerPatients = imported.timerPatients;
+          saveTimers();
         }
       } else {
         data = imported;

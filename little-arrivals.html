@@ -134,6 +134,14 @@
     </div>
   </div>
 
+  <button class="timer-fab" id="timer-fab" onclick="openTimerPage()">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="10" cy="11" r="7" stroke="#C890AA" stroke-width="1.7"/>
+      <path d="M10 8v3.5l2 1.5" stroke="#C890AA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.5 2.5h5" stroke="#C890AA" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="timer-fab-badge" id="timer-fab-badge" style="display:none">0</span>
+  </button>
   <button class="fab" id="fab">
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M11 3 L11 19" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
@@ -175,14 +183,57 @@
 
   <div class="overlay" id="del-overlay"></div>
   <div class="del-modal" id="del-modal">
-    <div class="del-modal-title">Delete this arrival?</div>
-    <div class="del-modal-sub">This little one will be gone for good.</div>
+    <div class="del-modal-title" id="del-modal-title">Delete this arrival?</div>
+    <div class="del-modal-sub" id="del-modal-sub">This little one will be gone for good.</div>
     <div class="del-modal-btns">
       <button class="del-modal-btn cancel" id="del-cancel">Cancel</button>
       <button class="del-modal-btn confirm" id="del-confirm">Delete</button>
     </div>
   </div>
 
+</div>
+
+<!-- Timer Page -->
+<div class="timer-page" id="timer-page">
+  <div class="timer-scroll">
+    <div class="timer-page-header">
+      <button class="profile-back" onclick="closeTimerPage()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="profile-page-title">Timers</div>
+      <button class="timer-add-patient-btn" onclick="openPatientSheet()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 2v9M2 6.5h9" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Add Patient
+      </button>
+    </div>
+    <div id="timer-patients-list"></div>
+  </div>
+</div>
+
+<!-- Add / Edit Patient sheet -->
+<div class="overlay" id="patient-overlay"></div>
+<div class="sheet" id="patient-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title" id="patient-sheet-title">Add Patient</div>
+  <label class="notes-lbl">Room / Name</label>
+  <input class="name-input" id="patient-label-input" type="text" placeholder="e.g. Room 4 — Sarah" autocomplete="off">
+  <button class="save-btn enabled" onclick="savePatient()">Save Patient</button>
+</div>
+
+<!-- Add Timer sheet -->
+<div class="overlay" id="timer-sheet-overlay"></div>
+<div class="sheet" id="timer-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Add Timer</div>
+  <div class="chips-label">Type</div>
+  <div class="chips-wrap" id="timer-type-chips"></div>
+  <div id="timer-custom-label-wrap" style="display:none">
+    <label class="notes-lbl">Timer name</label>
+    <input class="name-input" id="timer-custom-label-input" type="text" placeholder="e.g. IV fluids check" autocomplete="off">
+  </div>
+  <div class="chips-label">Every</div>
+  <div class="chips-wrap" id="timer-interval-chips"></div>
+  <button class="save-btn enabled" onclick="saveTimer()">Save Timer</button>
 </div>
 
 <div class="profile-page" id="profile-page">
@@ -267,11 +318,12 @@
 </div>
 
   <script src="store.js"></script>
-  <script src="illustrations.js"></script>
-  <script src="calendar.js"></script>
-  <script src="stats.js"></script>
-  <script src="machine.js"></script>
-  <script src="profile.js"></script>
-  <script src="main.js"></script>
+  <script src="components/illustrations.js"></script>
+  <script src="components/calendar.js"></script>
+  <script src="components/stats.js"></script>
+  <script src="components/machine.js"></script>
+  <script src="components/profile.js"></script>
+  <script src="components/timer.js"></script>
+  <script src="components/main.js"></script>
 </body>
 </html>

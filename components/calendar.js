@@ -184,6 +184,8 @@ function delBaby(key, idx) {
 function closeDelModal() {
   document.getElementById("del-overlay").classList.remove("open");
   document.getElementById("del-modal").classList.remove("open");
+  document.getElementById("del-modal-title").textContent = "Delete this arrival?";
+  document.getElementById("del-modal-sub").textContent = "This little one will be gone for good.";
   delPendingKey = null;
   delPendingIdx = null;
 }

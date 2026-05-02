@@ -24,11 +24,14 @@ let shiftNoteOpen = false;
 // ── Data stores ──
 let data = {};
 let shifts = {};
+let timerPatients = [];
 
 function load() { try { data = JSON.parse(localStorage.getItem("la3")||"{}"); } catch(e) { data={}; } }
 function save() { localStorage.setItem("la3", JSON.stringify(data)); }
 function loadShifts() { try { shifts = JSON.parse(localStorage.getItem("la-shifts")||"{}"); } catch(e) { shifts={}; } }
 function saveShifts() { localStorage.setItem("la-shifts", JSON.stringify(shifts)); }
+function loadTimers() { try { timerPatients = JSON.parse(localStorage.getItem("la-timers")||"[]"); } catch(e) { timerPatients=[]; } }
+function saveTimers() { localStorage.setItem("la-timers", JSON.stringify(timerPatients)); }
 
 function babies(k) { return data[k]||[]; }
 

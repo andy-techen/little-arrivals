@@ -25,6 +25,7 @@ function setTab(idx) {
   document.getElementById("tab-stats").classList.toggle("active", idx===1);
   document.getElementById("tab-babies").classList.toggle("active", idx===2);
   document.getElementById("fab").style.display = idx === 0 ? "flex" : "none";
+  document.getElementById("timer-fab").style.display = idx === 0 ? "flex" : "none";
   if(idx===1) renderCharts();
   if(idx===2) setTimeout(renderMachine, 50);
 }
@@ -99,7 +100,7 @@ document.getElementById("app").addEventListener("touchend",e=>{
 },{passive:true});
 
 // ── Init ──
-load(); loadShifts(); loadProfile(); renderHeader(); renderStrip(); renderCal(); renderDay();
+load(); loadShifts(); loadProfile(); loadTimers(); renderHeader(); renderStrip(); renderCal(); renderDay(); updateTimerFabBadge();
 document.getElementById("gnd-face-girl").innerHTML = girlSVG(56);
 document.getElementById("gnd-face-boy").innerHTML = boySVG(56);
 
