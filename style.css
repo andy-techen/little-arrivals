@@ -576,8 +576,15 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   display:flex; align-items:center; gap:8px;
   margin-bottom:20px;
 }
+.timer-clear-btn {
+  background:none; border:1.5px solid var(--line); border-radius:20px;
+  padding:7px 12px;
+  font-family:var(--fu); font-size:13px; font-weight:600; color:var(--ink-mid);
+  cursor:pointer; transition:transform 0.1s;
+}
+.timer-clear-btn:active { transform:scale(0.95); }
+
 .timer-add-patient-btn {
-  margin-left:auto;
   background:var(--pink-mid); border:none; border-radius:20px;
   padding:7px 14px;
   font-family:var(--fu); font-size:13px; font-weight:600; color:#fff;
@@ -678,7 +685,13 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   display:flex; flex-direction:column; gap:5px;
 }
 .timer-history-entry {
+  position:relative; overflow:hidden; border-radius:6px;
+}
+.timer-history-entry-inner {
   display:flex; align-items:center; gap:7px;
+  padding:2px 0; background:var(--bg);
+  transform:translateX(0); transition:transform 0.2s ease;
+  position:relative; z-index:1;
 }
 .timer-history-dot {
   width:6px; height:6px; border-radius:50%;
@@ -688,12 +701,13 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   font-size:12px; color:var(--ink-mid); flex:1;
 }
 .timer-history-del {
-  background:none; border:none; cursor:pointer; padding:2px 4px;
-  color:var(--ink-light); opacity:0; transition:opacity 0.15s;
-  display:flex; align-items:center;
+  position:absolute; right:0; top:0; bottom:0;
+  width:56px; background:#E24B4A; border:none; cursor:pointer;
+  color:#fff; font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  z-index:0;
 }
-.timer-history-entry:hover .timer-history-del { opacity:1; }
-.timer-history-del:active { color:var(--pink-deep); }
+.timer-history-del:active { background:#c73d3c; }
 
 .add-timer-btn {
   width:100%; border:none; background:none; cursor:pointer;

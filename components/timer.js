@@ -151,12 +151,15 @@ function renderTimerRow(patientId, timer) {
   var historyList = (expanded && history.length)
     ? '<div class="timer-history-list">' +
         history.map(function(e, i) {
-          return '<div class="timer-history-entry">' +
-            '<span class="timer-history-dot"></span>' +
-            '<span class="timer-history-time">' + formatTimestamp(e.completedAt) + '</span>' +
-            '<button class="timer-history-del" onclick="deleteHistoryEntry(\'' + patientId + '\',\'' + timer.id + '\',' + i + ')" title="Remove">' +
-              '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+          var eid = 'he-' + timer.id + '-' + i;
+          return '<div class="timer-history-entry" id="' + eid + '">' +
+            '<button class="timer-history-del" onclick="deleteHistoryEntry(\'' + patientId + '\',\'' + timer.id + '\',' + i + ')">' +
+              '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M5 4V3h4v1M3 4l1 8h6l1-8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
             '</button>' +
+            '<div class="timer-history-entry-inner">' +
+              '<span class="timer-history-dot"></span>' +
+              '<span class="timer-history-time">' + formatTimestamp(e.completedAt) + '</span>' +
+            '</div>' +
           '</div>';
         }).join("") +
       '</div>'
@@ -298,6 +301,15 @@ function savePatient() {
   renderTimerPage();
 }
 
+function clearAllPatients() {
+  if (!timerPatients.length) return;
+  openTimerDelModal(
+    "Clear all patients?",
+    "All patients and their timers will be gone.",
+    function() { timerPatients = []; persistAndRender(); }
+  );
+}
+
 function deletePatient(patientId) {
   var patient = findPatient(patientId);
   if (!patient) return;
@@ -430,3 +442,68 @@ if ("serviceWorker" in navigator) {
     if (e.data && e.data.type === "OPEN_TIMER") openTimerPage();
   });
 }
+
+// ── Swipe-to-delete on history entries ──
+
+(function() {
+  var REVEAL = 56;
+  var activeEntry = null;
+
+  function getInner(entry) { return entry.querySelector(".timer-history-entry-inner"); }
+
+  function setSwipe(inner, x) {
+    inner.style.transition = x === 0 ? "" : "none";
+    inner.style.transform = "translateX(" + (-Math.max(0, Math.min(REVEAL, x)) ) + "px)";
+  }
+
+  function closeActive() {
+    if (!activeEntry) return;
+    var inner = getInner(activeEntry);
+    if (inner) { inner.style.transition = ""; inner.style.transform = ""; }
+    activeEntry = null;
+  }
+
+  document.addEventListener("touchstart", function(e) {
+    var entry = e.target.closest(".timer-history-entry");
+    // Tapping outside an open entry closes it
+    if (activeEntry && entry !== activeEntry) closeActive();
+    if (!entry) return;
+    var inner = getInner(entry);
+    if (!inner) return;
+
+    var startX = e.touches[0].clientX;
+    var startY = e.touches[0].clientY;
+    var currentX = parseFloat(inner.style.transform.replace(/[^0-9.-]/g,"")) || 0;
+    var moved = false;
+
+    function onMove(ev) {
+      var dx = startX - ev.touches[0].clientX;
+      var dy = Math.abs(startY - ev.touches[0].clientY);
+      if (!moved && dy > Math.abs(dx)) { cleanup(); return; } // vertical scroll
+      moved = true;
+      setSwipe(inner, currentX + dx);
+    }
+
+    function onEnd(ev) {
+      cleanup();
+      var dx = startX - ev.changedTouches[0].clientX;
+      var total = currentX + dx;
+      inner.style.transition = "";
+      if (total > REVEAL / 2) {
+        inner.style.transform = "translateX(-" + REVEAL + "px)";
+        activeEntry = entry;
+      } else {
+        inner.style.transform = "";
+        activeEntry = null;
+      }
+    }
+
+    function cleanup() {
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    }
+
+    document.addEventListener("touchmove", onMove, { passive: true });
+    document.addEventListener("touchend", onEnd, { passive: true });
+  }, { passive: true });
+})();
