@@ -36,6 +36,32 @@ var TIMER_INTERVALS = [
   { label: "4h",  ms: 14400000 }
 ];
 
+// ── Helpers ──
+
+function findPatient(patientId) {
+  return timerPatients.find(function(p) { return p.id === patientId; });
+}
+
+function findTimer(patient, timerId) {
+  return (patient.timers || []).find(function(t) { return t.id === timerId; });
+}
+
+function shakeEl(el) {
+  if (!el) return;
+  el.style.animation = "none"; el.offsetWidth; el.style.animation = "shake 0.3s";
+}
+
+function persistAndRender() {
+  saveTimers(); renderTimerPage(); updateTimerFabBadge();
+}
+
+function makeTimer(type, customLabel, intervalMs) {
+  var now = Date.now();
+  return { id: "tmr_" + now, type: type, customLabel: customLabel,
+           intervalMs: intervalMs, nextDueAt: now + intervalMs,
+           history: [], pushNotificationId: null };
+}
+
 // ── Sheet helpers ──
 
 function sheetOpen(overlayId, sheetId) {
@@ -124,10 +150,13 @@ function renderTimerRow(patientId, timer) {
 
   var historyList = (expanded && history.length)
     ? '<div class="timer-history-list">' +
-        history.map(function(e) {
+        history.map(function(e, i) {
           return '<div class="timer-history-entry">' +
             '<span class="timer-history-dot"></span>' +
             '<span class="timer-history-time">' + formatTimestamp(e.completedAt) + '</span>' +
+            '<button class="timer-history-del" onclick="deleteHistoryEntry(\'' + patientId + '\',\'' + timer.id + '\',' + i + ')" title="Remove">' +
+              '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 1.5l7 7M8.5 1.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+            '</button>' +
           '</div>';
         }).join("") +
       '</div>'
@@ -158,6 +187,18 @@ function renderTimerRow(patientId, timer) {
 function toggleTimerHistory(timerId) {
   expandedTimerHistories[timerId] = !expandedTimerHistories[timerId];
   renderTimerPage();
+}
+
+function deleteHistoryEntry(patientId, timerId, index) {
+  var patient = findPatient(patientId);
+  if (!patient) return;
+  var timer = findTimer(patient, timerId);
+  if (!timer) return;
+  timer.history.splice(index, 1);
+  timer.nextDueAt = timer.history.length
+    ? timer.history[0].completedAt + timer.intervalMs
+    : Date.now() + timer.intervalMs;
+  persistAndRender();
 }
 
 // ── Formatting ──
@@ -196,9 +237,9 @@ function formatTimestamp(ts) {
 // ── Done / badge ──
 
 function markTimerDone(patientId, timerId) {
-  var patient = timerPatients.find(function(p) { return p.id === patientId; });
+  var patient = findPatient(patientId);
   if (!patient) return;
-  var timer = (patient.timers || []).find(function(t) { return t.id === timerId; });
+  var timer = findTimer(patient, timerId);
   if (!timer) return;
 
   timer.history = timer.history || [];
@@ -230,7 +271,7 @@ function updateTimerFabBadge() {
 
 function openPatientSheet(patientId) {
   addPatientEditId = patientId || null;
-  var patient = patientId && timerPatients.find(function(p) { return p.id === patientId; });
+  var patient = patientId && findPatient(patientId);
   document.getElementById("patient-sheet-title").textContent = patient ? "Edit Patient" : "Add Patient";
   document.getElementById("patient-label-input").value = patient ? patient.label : "";
   sheetOpen("patient-overlay", "patient-sheet");
@@ -242,16 +283,15 @@ function closePatientSheet() { sheetClose("patient-overlay", "patient-sheet"); }
 function savePatient() {
   var inp = document.getElementById("patient-label-input");
   var label = inp.value.trim();
-  if (!label) { inp.style.animation = "none"; inp.offsetWidth; inp.style.animation = "shake 0.3s"; return; }
+  if (!label) { shakeEl(inp); return; }
 
   if (addPatientEditId) {
-    var existing = timerPatients.find(function(p) { return p.id === addPatientEditId; });
+    var existing = findPatient(addPatientEditId);
     if (existing) existing.label = label;
   } else {
     var now = Date.now();
-    timerPatients.push({ id: "pt_" + now, label: label, createdAt: now, timers: [
-      { id: "tmr_" + now, type: "temperature", customLabel: "", intervalMs: TIMER_PRESETS["temperature"], nextDueAt: now + TIMER_PRESETS["temperature"], history: [], pushNotificationId: null }
-    ] });
+    timerPatients.unshift({ id: "pt_" + now, label: label, createdAt: now,
+      timers: [ makeTimer("temperature", "", TIMER_PRESETS["temperature"]) ] });
   }
   saveTimers();
   closePatientSheet();
@@ -259,14 +299,14 @@ function savePatient() {
 }
 
 function deletePatient(patientId) {
-  var patient = timerPatients.find(function(p) { return p.id === patientId; });
+  var patient = findPatient(patientId);
   if (!patient) return;
   openTimerDelModal(
     "Remove patient?",
     '"' + patient.label + '" and all their timers will be gone.',
     function() {
       timerPatients = timerPatients.filter(function(p) { return p.id !== patientId; });
-      saveTimers(); renderTimerPage(); updateTimerFabBadge();
+      persistAndRender();
     }
   );
 }
@@ -304,12 +344,11 @@ function selectTimerType(type) {
 function selectTimerInterval(ms) { selectedTimerIntervalMs = ms; renderChips(); }
 
 function saveTimer() {
-  var patient = timerPatients.find(function(p) { return p.id === addTimerPatientId; });
+  var patient = findPatient(addTimerPatientId);
   if (!patient) return;
 
   if (!selectedTimerIntervalMs) {
-    var chips = document.getElementById("timer-interval-chips");
-    if (chips) { chips.style.animation = "none"; chips.offsetWidth; chips.style.animation = "shake 0.3s"; }
+    shakeEl(document.getElementById("timer-interval-chips"));
     return;
   }
 
@@ -317,32 +356,24 @@ function saveTimer() {
   if (selectedTimerType === "custom") {
     var inp = document.getElementById("timer-custom-label-input");
     customLabel = inp.value.trim();
-    if (!customLabel) { inp.style.animation = "none"; inp.offsetWidth; inp.style.animation = "shake 0.3s"; return; }
+    if (!customLabel) { shakeEl(inp); return; }
   }
 
-  (patient.timers = patient.timers || []).push({
-    id: "tmr_" + Date.now(),
-    type: selectedTimerType,
-    customLabel: customLabel,
-    intervalMs: selectedTimerIntervalMs,
-    nextDueAt: Date.now() + selectedTimerIntervalMs,
-    history: [],
-    pushNotificationId: null
-  });
+  (patient.timers = patient.timers || []).push(makeTimer(selectedTimerType, customLabel, selectedTimerIntervalMs));
   saveTimers();
   closeTimerSheet();
   renderTimerPage();
 }
 
 function deleteTimer(patientId, timerId) {
-  var patient = timerPatients.find(function(p) { return p.id === patientId; });
+  var patient = findPatient(patientId);
   if (!patient) return;
   openTimerDelModal(
     "Remove timer?",
     "This timer and its history will be gone.",
     function() {
       patient.timers = (patient.timers || []).filter(function(t) { return t.id !== timerId; });
-      saveTimers(); renderTimerPage(); updateTimerFabBadge();
+      persistAndRender();
     }
   );
 }
