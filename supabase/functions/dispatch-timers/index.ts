@@ -2,10 +2,12 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import webpush from "npm:web-push";
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-);
+const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS");
+if (!secretKeysRaw) throw new Error("SUPABASE_SECRET_KEYS is not set");
+const secretKeys = JSON.parse(secretKeysRaw);
+const secretKey = secretKeys[0]?.api_key ?? secretKeys[0]?.secret ?? Object.values(secretKeys[0])[0];
+if (!secretKey) throw new Error("Could not extract secret key from SUPABASE_SECRET_KEYS: " + JSON.stringify(Object.keys(secretKeys[0])));
+const supabase = createClient(Deno.env.get("SUPABASE_URL")!, secretKey as string);
 
 webpush.setVapidDetails(
   Deno.env.get("VAPID_SUBJECT")!,
@@ -29,6 +31,7 @@ serve(async () => {
   let sent = 0;
   await Promise.allSettled(due.map(async (row) => {
     const sub = row.push_subscriptions;
+    if (!sub?.endpoint) return;
     try {
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },

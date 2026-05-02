@@ -39,12 +39,20 @@ self.addEventListener("notificationclick", function(e) {
                     });
                 }
             }
-            return clients.openWindow(url);
+            return clients.openWindow(url).then(function(client) {
+                if (!client) return;
+                // Delay to allow page scripts to finish loading and register listeners
+                setTimeout(function() {
+                    client.postMessage({ type: "OPEN_TIMER", data: data });
+                }, 1000);
+            });
         })
     );
 });
 
 self.addEventListener("fetch", function(e) {
+    var url = e.request.url;
+    if (url.includes("supabase.co") || url.includes("supabase.io")) return;
     e.respondWith(
         fetch(e.request).then(function(response) {
             var clone = response.clone();
