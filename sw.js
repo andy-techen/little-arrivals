@@ -51,8 +51,8 @@ self.addEventListener("notificationclick", function(e) {
 });
 
 self.addEventListener("fetch", function(e) {
-    var url = e.request.url;
-    if (url.includes("supabase.co") || url.includes("supabase.io")) return;
+    if (!e.request.url.startsWith("http")) return;
+    if (e.request.url.includes("supabase.co") || e.request.url.includes("supabase.io")) return;
     e.respondWith(
         fetch(e.request).then(function(response) {
             var clone = response.clone();
