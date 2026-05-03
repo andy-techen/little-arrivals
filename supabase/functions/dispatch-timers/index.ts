@@ -5,9 +5,7 @@ import webpush from "npm:web-push";
 const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS");
 if (!secretKeysRaw) throw new Error("SUPABASE_SECRET_KEYS is not set");
 const secretKeys = JSON.parse(secretKeysRaw);
-const secretKey = secretKeys[0]?.api_key ?? secretKeys[0]?.secret ?? Object.values(secretKeys[0])[0];
-if (!secretKey) throw new Error("Could not extract secret key from SUPABASE_SECRET_KEYS: " + JSON.stringify(Object.keys(secretKeys[0])));
-const supabase = createClient(Deno.env.get("SUPABASE_URL")!, secretKey as string);
+const supabase = createClient(Deno.env.get("SUPABASE_URL")!, secretKeys.default);
 
 webpush.setVapidDetails(
   Deno.env.get("VAPID_SUBJECT")!,
