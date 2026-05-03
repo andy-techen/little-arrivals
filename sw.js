@@ -29,7 +29,7 @@ self.addEventListener("push", function(e) {
 self.addEventListener("notificationclick", function(e) {
     e.notification.close();
     var data = e.notification.data || {};
-    var url = "/little-arrivals.html";
+    var url = self.registration.scope;
     e.waitUntil(
         clients.matchAll({ type: "window", includeUncontrolled: true }).then(function(list) {
             for (var c of list) {
