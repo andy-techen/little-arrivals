@@ -60,8 +60,8 @@ async function scheduleNotification(patient, timer) {
     .insert({
       subscription_id: subId,
       send_at: new Date(timer.nextDueAt).toISOString(),
-      title: "Reminder",
-      body: patient.label + " — " + label + " is due",
+      title: patient.label + ": " + label + " due",
+      body: "",
       data: { patientId: patient.id, timerId: timer.id }
     })
     .select("id")
